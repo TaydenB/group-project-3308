@@ -109,7 +109,33 @@ app.post("/register", async (req, res) =>{
 })
 
 app.post("/login", async (req, res) =>{
+    const username = req.body.username;
 
+    const query = `SELECT * FROM users WHERE username = $1;`;
+
+    try{
+        const user = await db.one(query, [username]);
+        console.log(username, user);
+        if (!user) {
+            return res.redirect("/register");
+        }
+        const match = await bcrypt.compare(req.body.password, user.password);
+        console.log(match);
+
+        if (match) {
+            req.session.user = user;
+            req.session.save();
+            res.redirect("/profile");
+        } else {
+            const errorMessage = "Incorrect password. Please try again.";
+            res.render("pages/login", { message: errorMessage, error: true });
+        }
+        
+    }
+    catch (err) {
+        console.log(err);
+        res.redirect("/register");
+    }
 })
 // Authentication Middleware.
 const auth = (req, res, next) => {
