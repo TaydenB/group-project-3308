@@ -17,14 +17,15 @@ CREATE TABLE IF NOT EXISTS scoreboard (
 
 CREATE TABLE IF NOT EXISTS users_to_scoreboard (
     user_id INT,
-    scoreboard_id INT;
-)
+    scoreboard_id INT
+);
 
 CREATE TABLE IF NOT EXISTS friends(
     user_id INT,
     friend_id INT,
-    status VARCHAR(20) DEFAULT 'pending',
-)
+    status VARCHAR(20) DEFAULT 'pending'
+);
+
 
 
 
