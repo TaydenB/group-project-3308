@@ -35,7 +35,7 @@ const dbConfig = {
 };
 
 const db = pgp(dbConfig);
-
+app.set('db', db);
 // test your database
 db.connect()
   .then(obj => {
@@ -76,124 +76,9 @@ app.use(
 // <!-- Section 4 : API Routes -->
 // *****************************************************
 
-// TODO - Include your API routes here
-app.get("/", (req, res) =>{
-    res.redirect('/login');
-})
+app.use('/', require('./routes/auth'));
+app.use('/', require('./routes/profile'));
 
-app.get("/login", (req, res) =>{
-    res.render('pages/login');
-})
-
-app.get("/register", (req, res) =>{
-    res.render('pages/register');
-})
-
-app.post("/register", async (req, res) =>{
-    const username = req.body.username;
-
-    const hash = await bcrypt.hash(req.body.password, 10);
-    const query = `INSERT INTO users (username, password) VALUES ($1, $2) RETURNING *;`
-
-    try{
-        await db.one(query, [username, hash]);
-
-        res.redirect('/');
-    }
-    catch(err){
-        const error = true;
-        console.log(err);
-        const errorMessage = "Username already exists";
-        
-        res.render('pages/register', {message: errorMessage, error});
-    }
-})
-
-app.post("/login", async (req, res) =>{
-    const username = req.body.username;
-
-    const query = `SELECT * FROM users WHERE username = $1;`;
-
-    try{
-        const user = await db.one(query, [username]);
-        console.log(username, user);
-        if (!user) {
-            return res.redirect("/register");
-        }
-        const match = await bcrypt.compare(req.body.password, user.password);
-        console.log(match);
-
-        if (match) {
-            req.session.user = user;
-            req.session.save();
-            res.redirect("/profile/account");
-        } else {
-            const errorMessage = "Incorrect password. Please try again.";
-            res.render("pages/login", { message: errorMessage, error: true });
-        }
-        
-    }
-    catch (err) {
-        console.log(err);
-        res.redirect("/register");
-    }
-})
-// Authentication Middleware.
-const auth = (req, res, next) => {
-  if (!req.session.user) {
-    // Default to login page.
-    return res.redirect('/login');
-  }
-  next();
-};
-app.use(auth);
-
-app.get('/profile', (req, res) => {
-  res.redirect('/profile/account');  // Send users to the Account tab by default
-});
-
-
-app.get('/profile/account', (req, res) => {
-  const user = req.session.user;
-  res.render('pages/profile', {
-    active: { profile: true, account: true },
-    username: user?.username || 'demoUser',
-    name: user?.name || 'Demo Name',
-    email: user?.email || 'demo@example.com',
-  });
-});
-
-app.get('/profile/stats', (req, res) => {
-  const user = req.session.user;
-  res.render('pages/profile', {
-    active: { profile: true, stats: true },
-    username: user?.username || 'demoUser',
-    stats: {
-      plays: 20, wins: 10, avgGuesses: 4.8, avgTime: '132s',
-      challengePlays: 9, challengeWins: 6
-    }
-  });
-});
-
-app.get('/profile/social', (req, res) => {
-  const user = req.session.user;
-  res.render('pages/profile', {
-    active: { profile: true, social: true },
-    username: user?.username || 'demoUser',
-    friends: [{ username: 'Alice' }, { username: 'Bob' }, { username: 'Charlie' }]
-  });
-});
-
-
-
-
-
-app.get('/logout', async (req, res) => {
-  req.session.destroy(() => {
-    res.redirect('/login');
-  });
-    
-});
 // *****************************************************
 // <!-- Section 5 : Start Server-->
 // *****************************************************
