@@ -1,0 +1,24 @@
+services:
+  db:
+    image: postgres:14
+    env_file: .env
+    expose:
+      - "5432"
+    volumes:
+      - group-project-3308:/var/lib/postgresql/data
+  web:
+    image: node:lts
+    user: "node"
+    working_dir: /home/node/app
+    env_file: .env
+    environment:
+      - NODE_ENV=development
+    depends_on:
+      - db
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./:/home/node/app
+    command: "npm start"
+volumes:
+  group-project-3308:
