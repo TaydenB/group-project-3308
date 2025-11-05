@@ -22,6 +22,7 @@ const hbs = handlebars.create({
   extname: 'hbs',
   layoutsDir: __dirname + '/views/layouts',
   partialsDir: __dirname + '/views/partials',
+  defaultLayout: 'main',
 });
 
 // database configuration
@@ -125,7 +126,7 @@ app.post("/login", async (req, res) =>{
         if (match) {
             req.session.user = user;
             req.session.save();
-            res.redirect("/profile");
+            res.redirect("/profile/account");
         } else {
             const errorMessage = "Incorrect password. Please try again.";
             res.render("pages/login", { message: errorMessage, error: true });
@@ -147,13 +148,50 @@ const auth = (req, res, next) => {
 };
 app.use(auth);
 
-app.get('/profile', async (req, res) => {
-    
-    res.render('pages/profile.hbs');
-    
+app.get('/profile', (req, res) => {
+  res.redirect('/profile/account');  // Send users to the Account tab by default
 });
 
+
+app.get('/profile/account', (req, res) => {
+  const user = req.session.user;
+  res.render('pages/profile', {
+    active: { profile: true, account: true },
+    username: user?.username || 'demoUser',
+    name: user?.name || 'Demo Name',
+    email: user?.email || 'demo@example.com',
+  });
+});
+
+app.get('/profile/stats', (req, res) => {
+  const user = req.session.user;
+  res.render('pages/profile', {
+    active: { profile: true, stats: true },
+    username: user?.username || 'demoUser',
+    stats: {
+      plays: 20, wins: 10, avgGuesses: 4.8, avgTime: '132s',
+      challengePlays: 9, challengeWins: 6
+    }
+  });
+});
+
+app.get('/profile/social', (req, res) => {
+  const user = req.session.user;
+  res.render('pages/profile', {
+    active: { profile: true, social: true },
+    username: user?.username || 'demoUser',
+    friends: [{ username: 'Alice' }, { username: 'Bob' }, { username: 'Charlie' }]
+  });
+});
+
+
+
+
+
 app.get('/logout', async (req, res) => {
+  req.session.destroy(() => {
+    res.redirect('/login');
+  });
     
 });
 // *****************************************************
