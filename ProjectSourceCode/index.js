@@ -35,7 +35,7 @@ const dbConfig = {
 };
 
 const db = pgp(dbConfig);
-app.set('db', db);
+
 // test your database
 db.connect()
   .then(obj => {
@@ -46,6 +46,7 @@ db.connect()
     console.log('ERROR:', error.message || error);
   });
 
+app.set('db', db);
 // *****************************************************
 // <!-- Section 3 : App Settings -->
 // *****************************************************
@@ -83,5 +84,6 @@ app.use('/', require('./routes/profile'));
 // <!-- Section 5 : Start Server-->
 // *****************************************************
 // starting the server and keeping the connection open to listen for more requests
-app.listen(3000);
 console.log('Server is listening on port 3000');
+
+module.exports = app.listen(3000);
