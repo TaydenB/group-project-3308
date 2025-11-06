@@ -35,7 +35,7 @@ const dbConfig = {
 };
 
 const db = pgp(dbConfig);
-app.set('db', db);
+
 // test your database
 db.connect()
   .then(obj => {
@@ -46,6 +46,7 @@ db.connect()
     console.log('ERROR:', error.message || error);
   });
 
+app.set('db', db);
 // *****************************************************
 // <!-- Section 3 : App Settings -->
 // *****************************************************

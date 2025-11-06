@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS users (
-    id INT PRIMARY KEY,
-    username VARCHAR(100),
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(100) UNIQUE NOT NULL,
     password VARCHAR(100) NOT NULL,
     first_name VARCHAR(100),
     last_name VARCHAR(100),
@@ -8,16 +8,19 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 CREATE TABLE IF NOT EXISTS scoreboard (
-    id INT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     first_name VARCHAR(100),
     last_name VARCHAR(100),
     score INT,
+    username VARCHAR(100),
     FOREIGN KEY(username) REFERENCES users(username)
 );
 
 CREATE TABLE IF NOT EXISTS users_to_scoreboard (
     user_id INT,
-    scoreboard_id INT
+    scoreboard_id INT,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (scoreboard_id) REFERENCES scoreboard(id)
 );
 
 CREATE TABLE IF NOT EXISTS friends(
@@ -25,7 +28,3 @@ CREATE TABLE IF NOT EXISTS friends(
     friend_id INT,
     status VARCHAR(20) DEFAULT 'pending'
 );
-
-
-
-
