@@ -1,0 +1,28 @@
+Testing
+1. Login
+2. Word Verification
+3. Challenge Link
+
+1.
+i)test username, password, first name, last name
+ii)Will get from users, username, password, first,last name and verify they match
+iii)The test will be conducted through local host.
+iv)Test results will include a pass and a fail, result message that data was properly pulled from the database
+v)family
+vi)failed to login data does not match, logged in succesfully data matches
+
+2.
+i)test that the words exist and that they are 5 letters
+ii)Test word is 5 letters. Test word against dictionary to verify existence We will be getting the words from a dictionary, and or user input
+iii)localhost
+iv)Test results 5 letter word that exists, or if fail DNE
+v)family
+vi)Word does not match specifications
+
+3. 
+1)Test that challenge link is the one sent and that the word is the same
+ii)challenge link and word
+iii)localhost
+iv)link provided not correct, word provided not correct, or successfully sent
+v)family
+vi)link provided not correct, word provided not correct, or successfully sent
