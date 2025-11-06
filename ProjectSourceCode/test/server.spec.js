@@ -10,23 +10,20 @@ chai.should();
 chai.use(chaiHttp);
 const { assert, expect } = chai;
 
-// ********************** DEFAULT WELCOME TESTCASE ****************************
+// *********************** TODO: WRITE 2 UNIT TESTCASES **************************
 
-describe('Server!', () => {
-  // Sample test case given to test / endpoint.
-  it('Returns the default welcome message', done => {
+describe('Testing Register New User', () => {
+  it('Registers new user', done => {
     chai
       .request(server)
-      .get('/welcome')
+      .post('/register')
+      .send({ username: "user", password: "password" })
       .end((err, res) => {
-        expect(res).to.have.status(200);
-        expect(res.body.status).to.equals('success');
-        assert.strictEqual(res.body.message, 'Welcome!');
+        expect(res).to.have.status(201);
+        expect(res.text).to.include("Account created successfully!");
         done();
       });
   });
 });
-
-// *********************** TODO: WRITE 2 UNIT TESTCASES **************************
 
 // ********************************************************************************
