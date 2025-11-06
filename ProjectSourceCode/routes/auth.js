@@ -22,13 +22,13 @@ router.post("/register", async (req, res) => {
 
   try {
     await db.one(query, [username, hash]);
-    res.redirect('/');
+    res.status(201).render('pages/login', { message: "Account created successfully!", error: false });
   }
   catch (err) {
     const error = true;
     console.log(err);
     const errorMessage = "Username already exists";
-    res.render('pages/register', { message: errorMessage, error });
+    res.status(400).render('pages/register', { message: errorMessage, error });
   }
 })
 
