@@ -24,6 +24,18 @@ describe('Testing Register New User', () => {
         done();
       });
   });
+
+  it('Fail registration', done => {
+    chai
+      .request(server)
+      .post('/register')
+      .send({ username: "user", password: "password" })
+      .end((err, res) => {
+        expect(res).to.have.status(400);
+        expect(res.text).to.include("Username already exists");
+        done();
+      });
+  });
 });
 
 // ********************************************************************************
