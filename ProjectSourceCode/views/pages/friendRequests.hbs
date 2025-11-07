@@ -1,9 +1,10 @@
-{{> socialSidebar}}
 <div class="container">
   <div class="row">
     <div class="col-md-4"></div>
     <div class="col-md-4">
-        <h2> Friend Requests </h2>
+        <h2 class="mx-2"> Friend Requests </h2>
+        {{> socialSidebar}}
+        <br>
         <form method="POST" action="/profile/social/requests">
             <label for = "add_friend">Add Friend</label>
             <input type="text" name="add_friend" id="add_friend"/>

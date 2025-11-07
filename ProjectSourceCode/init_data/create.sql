@@ -13,7 +13,6 @@ CREATE TABLE IF NOT EXISTS scoreboard (
     last_name VARCHAR(100),
     score INT,
     username VARCHAR(100),
-    FOREIGN KEY(username) REFERENCES users(username)
     FOREIGN KEY(user_id) REFERENCES users(id)
 );
 

@@ -11,6 +11,10 @@ const auth = (req, res, next) => {
 };
 router.use(auth);
 
+router.get('/home', async (req, res) => {
+  res.render('pages/home.hbs');
+  
+});
 router.get('/profile', async (req, res) => {
 
   res.render('pages/profile.hbs');
@@ -21,6 +25,7 @@ router.get('/profile/social', async (req, res) => {
   res.render('pages/social.hbs');
   
 });
+
 router.get('/profile/social/requests', async (req, res) => {
   const db = req.app.get('db');
   const query = `SELECT u.id, u.username FROM friends f 
