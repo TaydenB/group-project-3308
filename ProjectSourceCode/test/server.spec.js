@@ -11,13 +11,16 @@ chai.use(chaiHttp);
 const { assert, expect } = chai;
 
 // *********************** TODO: WRITE 2 UNIT TESTCASES **************************
-
+function randomString(length) {
+  return Math.random().toString(36).substring(2, 2 + length);
+}
 describe('Testing Register New User', () => {
+  const str = randomString(20);
   it('Registers new user', done => {
     chai
       .request(server)
       .post('/register')
-      .send({ username: "user", password: "password" })
+      .send({ username: str, password: "password" })
       .end((err, res) => {
         expect(res).to.have.status(201);
         expect(res.text).to.include("Account created successfully!");
@@ -29,7 +32,7 @@ describe('Testing Register New User', () => {
     chai
       .request(server)
       .post('/register')
-      .send({ username: "user", password: "password" })
+      .send({ username: str, password: "password" })
       .end((err, res) => {
         expect(res).to.have.status(400);
         expect(res.text).to.include("Username already exists");
