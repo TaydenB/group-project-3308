@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS users (
 
 CREATE TABLE IF NOT EXISTS scoreboard (
     id SERIAL PRIMARY KEY,
+    user_id INT,
     first_name VARCHAR(100),
     last_name VARCHAR(100),
     score INT,
