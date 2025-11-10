@@ -10,23 +10,35 @@ chai.should();
 chai.use(chaiHttp);
 const { assert, expect } = chai;
 
-// ********************** DEFAULT WELCOME TESTCASE ****************************
-
-describe('Server!', () => {
-  // Sample test case given to test / endpoint.
-  it('Returns the default welcome message', done => {
+// *********************** TODO: WRITE 2 UNIT TESTCASES **************************
+function randomString(length) {
+  return Math.random().toString(36).substring(2, 2 + length);
+}
+describe('Testing Register New User', () => {
+  const str = randomString(20);
+  it('Registers new user', done => {
     chai
       .request(server)
-      .get('/welcome')
+      .post('/register')
+      .send({ username: str, password: "password" })
       .end((err, res) => {
-        expect(res).to.have.status(200);
-        expect(res.body.status).to.equals('success');
-        assert.strictEqual(res.body.message, 'Welcome!');
+        expect(res).to.have.status(201);
+        expect(res.text).to.include("Account created successfully!");
+        done();
+      });
+  });
+
+  it('Fail registration', done => {
+    chai
+      .request(server)
+      .post('/register')
+      .send({ username: str, password: "password" })
+      .end((err, res) => {
+        expect(res).to.have.status(400);
+        expect(res.text).to.include("Username already exists");
         done();
       });
   });
 });
-
-// *********************** TODO: WRITE 2 UNIT TESTCASES **************************
 
 // ********************************************************************************
