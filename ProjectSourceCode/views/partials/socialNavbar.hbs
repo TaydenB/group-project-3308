@@ -1,5 +1,5 @@
 <nav class="navbar navbar-expand-sm border-bottom">
-    <div class="container">
+    <div class="container-fluid">
 
       <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-collapse"
         aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
@@ -10,11 +10,14 @@
         <ul class="navbar-nav me-auto">
 
           <li class="nav-item">
-            <a class="nav-link" href="/profile/social">Friends</a>
+            <a class="nav-link {{#if active.friends}}active{{/if}}" href="/profile/social">Friends</a>
           </li>
 
           <li class="nav-item">
-            <a class="nav-link {{#if active.profile}}active{{/if}}" href="/profile/social/requests">Friend Requests</a>
+            <a class="nav-link {{#if active.requests}}active{{/if}}" href="/profile/social/requests">Friend Requests</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {{#if active.sent}}active{{/if}}" href="/profile/social/requests/sent">Sent Requests</a>
           </li>
 
         </ul>

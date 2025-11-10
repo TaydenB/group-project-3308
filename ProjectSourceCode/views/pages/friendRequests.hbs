@@ -1,22 +1,26 @@
-<div class="container">
-  <div class="row">
-    <div class="col-md-4"></div>
-    <div class="col-md-4">
-        <h2 class="mx-2"> Friend Requests </h2>
-        {{> socialSidebar}}
-        <br>
-        <form method="POST" action="/profile/social/requests">
-            <label for = "add_friend">Add Friend</label>
-            <input type="text" name="add_friend" id="add_friend"/>
-            <input class="btn btn-primary" type="submit" value="Add"/>
-        </form>
+{{> socialHeader}}
+<div class="ps-5 pe-5">
+    <ul class="list-group">
+        <p>Requests</p>
         {{#each friends}}
-            <div class="col border border-1 border-dark mx-2 pt-3 my-3">
-                <p>{{username}}</p>
-            </div>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                    <strong>{{first_name}} {{last_name}}</strong>
+                    <p class="mb-0">@{{username}}</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <form method="POST" action="/profile/social/requests/decline">
+                        <input type="hidden" name="friend_id" value="{{id}}">
+                        <button type="submit" class="btn btn-danger btn-sm">Decline</button>
+                    </form>
+                    <form method="POST" action="/profile/social/requests/accept">
+                        <input type="hidden" name="friend_id" value="{{id}}">
+                        <button type="submit" class="btn btn-success btn-sm">Accept</button>
+                    </form>
+                </div>
+            </li>
         {{/each}}
-    </div>
- </div>
+    </ul>
+    <br>
 </div>
-
 {{> message}}
