@@ -85,9 +85,13 @@ app.use((req, res, next) => {
 
 app.use('/', require('./routes/auth'));
 app.use('/', require('./routes/profile'));
+<<<<<<< HEAD
 app.use('/', require('./routes/challenge'));
 app.use('/', require('./routes/home'));
 app.use('/', require('./routes/social'));
+=======
+app.use('/', require('./routes/scoreboard'));
+>>>>>>> Scoreboard
 
 // *****************************************************
 // <!-- Section 5 : Start Server-->
