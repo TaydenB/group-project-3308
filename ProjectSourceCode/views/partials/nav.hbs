@@ -15,7 +15,7 @@
           </li>
           {{#unless user}}
           <li class="nav-item">
-            <a class="nav-link {{#if active.profile}}active{{/if}}" href="/profile">Account</a>
+            <a class="nav-link" href="/login">Login</a>
           </li>
 
           <li class="nav-item">
@@ -25,11 +25,9 @@
           {{#if user}}
           <li class="nav-item">
             <a class="nav-link" href="/profile">Account</a>
-            <a class="nav-link {{#unless active.profile}}active{{/unless}}" href="/login">Login</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="/challenge">Challenge</a>
-            <a class="nav-link {{#unless active.profile}}active{{/unless}}" href="/register">Register</a>
           </li>
           {{/if}}
 
