@@ -17,7 +17,7 @@
                 </div>
                 <strong>{{first_name}} {{last_name}}</strong>
                 <form method="POST" action="/profile/social/requests/sent/cancel">
-                    <input type="hidden" name="friend_id" value="{{id}}">
+                    <input type="hidden" name="friend_username" value="{{username}}">
                     <button type="submit" class="btn btn-danger float-end">Cancel</button>
                 </form>
             </li>

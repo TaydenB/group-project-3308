@@ -158,9 +158,9 @@ router.post("/profile/social/requests/sent/cancel", async (req, res) => {
   const userUsername = req.session.user.username;
   try {
 
-    const query = `DELETE FROM friends WHERE user_id = $1 AND friend_id = $2;`
+    const query = `DELETE FROM friends WHERE user_username = $1 AND friend_username = $2;`
     await db.none(query, [userUsername, friendUsername]);
-
+    console.log(userUsername, friendUsername);
     // Update sent requests html
     const querySentFriends = `SELECT u.username FROM friends f 
   JOIN users u ON u.username = f.friend_username WHERE f.user_username = $1 AND f.status = 'pending'`;
