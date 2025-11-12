@@ -26,6 +26,12 @@ router.get('/profile/social', async (req, res) => {
   
 });
 
+router.get('/daily', async (req,res) => {
+  
+  res.render('pages/daily.hbs');
+  
+});
+
 router.get('/profile/social/requests', async (req, res) => {
   const db = req.app.get('db');
   const query = `SELECT u.id, u.username FROM friends f 

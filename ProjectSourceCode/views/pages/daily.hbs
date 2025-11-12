@@ -1,10 +1,33 @@
 <!DOCTYPE html>
-<hmtl lang="en">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Buff Games</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-    <link rel="stylesheet" href="../css/daily.css">
+    <style>
+        .tile {
+            width: 55px;
+            height: 55px;
+            font-size: 16px;
+            font-weight: bold;
+            text-transform: uppercase;
+            border:2px solid black;
+            border-radius: 6px;
+            margin: 3px;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            background-color: white;
+        }
+        .keyboard-key {
+            width: 40px;
+            margin: 2px;
+            font-weight: bold;
+        }
+        #keyboard {
+            width: 500px;
+        }
+    </style>
 </head>
 <body>
 <!--Center the game-->
@@ -14,35 +37,41 @@
         <!--Create the tiles, 6 rows, 5 columns-->
         <div class="row justify-content-center">
             <!--5 tiles per row-->
-            <div class="tile"></div><div class="tile"></div><div class="tile">
+            <div class="tile"></div><div class="tile"></div><div class="tile"></div>
             <div class="tile"></div><div class="tile"></div>
         </div>
         <div class="row justify-content-center">
             <!--5 tiles per row-->
-            <div class="tile"></div><div class="tile"></div><div class="tile">
+            <div class="tile"></div><div class="tile"></div><div class="tile"></div>
             <div class="tile"></div><div class="tile"></div>
         </div>
         <div class="row justify-content-center">
             <!--5 tiles per row-->
-            <div class="tile"></div><div class="tile"></div><div class="tile">
+            <div class="tile"></div><div class="tile"></div><div class="tile"></div>
             <div class="tile"></div><div class="tile"></div>
         </div>
         <div class="row justify-content-center">
             <!--5 tiles per row-->
-            <div class="tile"></div><div class="tile"></div><div class="tile">
+            <div class="tile"></div><div class="tile"></div><div class="tile"></div>
             <div class="tile"></div><div class="tile"></div>
         </div>
         <div class="row justify-content-center">
             <!--5 tiles per row-->
-            <div class="tile"></div><div class="tile"></div><div class="tile">
+            <div class="tile"></div><div class="tile"></div><div class="tile"></div>
             <div class="tile"></div><div class="tile"></div>
         </div>
         <div class="row justify-content-center">
             <!--5 tiles per row-->
-            <div class="tile"></div><div class="tile"></div><div class="tile">
+            <div class="tile"></div><div class="tile"></div><div class="tile"></div>
             <div class="tile"></div><div class="tile"></div>
         </div>
     </div>
+    <!--Create the Keyboard-->
+    <div id="keyboard" class="mx-auto">
+        
+    </div>
 </div>
+
+<!--Add JS implementation of game-->
 </body>
-</hmtl>
+</html>
