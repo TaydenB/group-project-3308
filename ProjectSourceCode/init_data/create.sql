@@ -31,3 +31,11 @@ CREATE TABLE IF NOT EXISTS friends(
     FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (friend_id) REFERENCES users(id)
 );
+
+CREATE TABLE IF NOT EXISTS challenge(
+    id SERIAL PRIMARY KEY,
+    word VARCHAR(5) NOT NULL,
+    username VARCHAR(100),
+    FOREIGN KEY (username) REFERENCES users(username)
+);
+

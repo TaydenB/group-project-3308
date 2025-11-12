@@ -72,6 +72,12 @@ app.use(
   })
 );
 
+//sets user variable to be used by handlebars
+app.use((req, res, next) => {
+  res.locals.user = req.session.user;
+  next();
+});
+
 
 // *****************************************************
 // <!-- Section 4 : API Routes -->
@@ -79,6 +85,8 @@ app.use(
 
 app.use('/', require('./routes/auth'));
 app.use('/', require('./routes/profile'));
+app.use('/', require('./routes/challenge'));
+app.use('/', require('./routes/home'));
 app.use('/', require('./routes/social'));
 
 // *****************************************************
