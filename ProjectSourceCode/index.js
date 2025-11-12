@@ -79,6 +79,7 @@ app.use(
 
 app.use('/', require('./routes/auth'));
 app.use('/', require('./routes/profile'));
+app.use('/', require('./routes/scoreboard'));
 
 // *****************************************************
 // <!-- Section 5 : Start Server-->
