@@ -87,6 +87,7 @@ app.use('/', require('./routes/auth'));
 app.use('/', require('./routes/profile'));
 app.use('/', require('./routes/challenge'));
 app.use('/', require('./routes/home'));
+app.use('/', require('./routes/social'));
 
 // *****************************************************
 // <!-- Section 5 : Start Server-->
