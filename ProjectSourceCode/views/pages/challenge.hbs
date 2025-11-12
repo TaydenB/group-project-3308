@@ -1,0 +1,10 @@
+<form action="/challenge" method="POST" class="word-form">
+  <label for="word">Enter the 5-letter word:</label>
+  <input type="text" name="word" id="word" minlength="5" maxlength="5" pattern="^[a-zA-Z]{5}$" required
+    placeholder="buffs" />
+  <button type="submit">Submit</button>
+</form>
+
+{{> message}}
+
+{{> link}}

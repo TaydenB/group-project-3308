@@ -1,0 +1,26 @@
+<table class="scoreboard">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Username</th>
+            <th>Name</th>
+            <th>Score</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{#if entries.length}}
+        {{#each entries}}
+        <tr>
+            <td>{{add1 @index}}</td>
+            <td>{{username}}</td>
+            <td>{{#if first_name}}{{first_name}} {{last_name}}{{else}}—{{/if}}</td>
+            <td>{{score}}</td>
+        </tr>
+        {{/each}}
+        {{else}}
+        <tr>
+            <td colspan="4">No scores yet.</td>
+        </tr>
+        {{/if}}
+    </tbody>
+</table>
