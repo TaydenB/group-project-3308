@@ -11,13 +11,13 @@ const auth = (req, res, next) => {
 };
 router.use(auth);
 
+router.get('/home', async (req, res) => {
+  res.render('pages/home.hbs');
+  
+});
 router.get('/profile', async (req, res) => {
 
   res.render('pages/profile.hbs');
-
-});
-
-router.get('/logout', async (req, res) => {
 
 });
 

@@ -15,19 +15,15 @@
           </li>
           {{#unless user}}
           <li class="nav-item">
-            <a class="nav-link" href="/login">Login</a>
+            <a class="nav-link {{#if active.profile}}active{{/if}}" href="/profile">Account</a>
           </li>
 
           <li class="nav-item">
-            <a class="nav-link" href="/register">Register</a>
-          </li>
-          {{/unless}}
-          {{#if user}}
-          <li class="nav-item">
-            <a class="nav-link" href="/views/pages/account.hbs">Account</a>
+            <a class="nav-link {{#unless active.profile}}active{{/unless}}" href="/login">Login</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="/challenge">Challenge</a>
+            <a class="nav-link {{#unless active.profile}}active{{/unless}}" href="/register">Register</a>
           </li>
           {{/if}}
 
