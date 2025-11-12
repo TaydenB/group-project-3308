@@ -28,3 +28,11 @@ CREATE TABLE IF NOT EXISTS friends(
     friend_id INT,
     status VARCHAR(20) DEFAULT 'pending'
 );
+
+CREATE TABLE IF NOT EXISTS challenge(
+    id SERIAL PRIMARY KEY,
+    word VARCHAR(5) NOT NULL,
+    username VARCHAR(100),
+    FOREIGN KEY (username) REFERENCES users(username)
+);
+
