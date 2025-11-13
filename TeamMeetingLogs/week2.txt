@@ -1,0 +1,11 @@
+1. We decided to create the basic outline of our website. We wanted basic login, logout, register implementations. Other things like headers and footers as well just for a quick baseline to work from.
+
+2. Decided to alter what people were doing due to communication mistakes. 
+
+3.
+Tayden: Create Friends and users_to_leaderboards tables, create footer, create login html
+Oliver: Created sql tables and added the partial for navbar
+Noah: Added functionality for users to register and login. Started social page by allowing users to send friend requests
+Jaden: added profile tab redirects 
+Brandon: Created home page
+Joe: Create logout functionality and clean up index.js file
