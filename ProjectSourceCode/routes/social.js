@@ -33,11 +33,11 @@ router.get('/profile/social', async (req, res) => {
 
         console.log(friends, recievedFreinds, sentFriends);
         socialObj.friends = friends;
-        res.render('pages/social.hbs', socialObj);
+        res.status(200).render('pages/social.hbs', socialObj);
     }
     catch (err) {
         console.log(err);
-        res.render('pages/social.hbs', socialObj);
+        res.status(500).send('Error loading friends');
     }
   
 });
@@ -58,11 +58,11 @@ router.get('/profile/social/requests', async (req, res) => {
         console.log(friends);
         
         socialObj.friends = friends;
-        res.render('pages/friendRequests.hbs', socialObj);
+        res.status(200).render('pages/friendRequests.hbs', socialObj);
     }
     catch (err) {
         console.log(err);
-        res.render('pages/friendRequests.hbs', socialObj);
+        res.status(500).send('Error loading friend requests');
     }
   
 });
@@ -91,10 +91,11 @@ router.post("/profile/social/requests/decline", async (req, res) => {
         socialObj.friends = friends;
         socialObj["message"] = "Request Declined";
 
-        return res.render("pages/friendRequests.hbs", socialObj);
+        return res.status(201).render("pages/friendRequests.hbs", socialObj);
     }
     catch (err) {
         console.log(err);
+        res.status(500).send('Error declining friend requests');
     }
 });
 router.post("/profile/social/requests/accept", async (req, res) => {
@@ -122,10 +123,11 @@ router.post("/profile/social/requests/accept", async (req, res) => {
         socialObj.friends = friends;
         socialObj["message"] = "Request Accepted";
 
-        return res.render("pages/friendRequests.hbs", socialObj);
+        return res.status(201).render("pages/friendRequests.hbs", socialObj);
     }
     catch (err) {
         console.log(err);
+        res.status(500).send('Error accepting friend request');
     }
 });
 router.get('/profile/social/requests/sent', async (req, res) => {
@@ -145,11 +147,11 @@ router.get('/profile/social/requests/sent', async (req, res) => {
         console.log(friends);
 
         socialObj.friends = friends;
-        res.render('pages/sentFriendRequests.hbs', socialObj);
+        res.status(200).render('pages/sentFriendRequests.hbs', socialObj);
     }
     catch (err) {
         console.log(err);
-        res.render('pages/sentFriendRequests.hbs', socialObj);
+        res.status(500).send('Error loading sent friend requests');
     }
   
 });
@@ -179,7 +181,7 @@ router.post("/profile/social/requests/sent", async (req, res) => {
             const errorMessage = "Can't friend yourself.";
             socialObj.message = errorMessage;
             socialObj.error = true;
-            return res.render("pages/sentFriendRequests.hbs", socialObj);
+            return res.status(400).render("pages/sentFriendRequests.hbs", socialObj);
         }
 
         // Check for valid username
@@ -189,7 +191,7 @@ router.post("/profile/social/requests/sent", async (req, res) => {
             const errorMessage = "Username does not exist.";
             socialObj.message = errorMessage;
             socialObj.error = true;
-            return res.render("pages/sentFriendRequests.hbs", socialObj);
+            return res.status(400).render("pages/sentFriendRequests.hbs", socialObj);
         }
         
         // Check if friendship already exists
@@ -201,7 +203,7 @@ router.post("/profile/social/requests/sent", async (req, res) => {
             const errorMessage = "Already existing friendship or request.";
             socialObj.message = errorMessage;
             socialObj.error = true;
-            return res.render("pages/sentFriendRequests.hbs", socialObj);
+            return res.status(400).render("pages/sentFriendRequests.hbs", socialObj);
         }
 
         // Add new friend
@@ -213,10 +215,11 @@ router.post("/profile/social/requests/sent", async (req, res) => {
         
         socialObj.message = "Friend request sent successfully";
         socialObj.friends = friends;
-        return res.render("pages/sentFriendRequests.hbs", socialObj);
+        return res.status(201).render("pages/sentFriendRequests.hbs", socialObj);
     }
     catch (err) {
         console.log(err);
+        res.status(500).send('Unexpected error when sending friend request');
     }
 });
 router.post("/profile/social/requests/sent/cancel", async (req, res) => {
@@ -241,12 +244,13 @@ router.post("/profile/social/requests/sent/cancel", async (req, res) => {
         const querySentFriends = `SELECT u.id, u.username FROM friends f 
         JOIN users u ON u.id = f.friend_id WHERE f.user_id = $1 AND f.status = 'pending'`;
         const friends = await db.any(querySentFriends, [userId]);
-        socialObj.message = "Request cancelled Successfully";
+        socialObj.message = "Request Cancelled Successfully";
         socialObj.friends = friends;
-        return res.render("pages/sentFriendRequests.hbs", socialObj);
+        return res.status(201).render("pages/sentFriendRequests.hbs", socialObj);
     }
     catch (err) {
         console.log(err);
+        res.status(500).send('Error cancelling friend request');
     }
 });
 
