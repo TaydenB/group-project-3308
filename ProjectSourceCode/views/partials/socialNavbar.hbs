@@ -10,14 +10,14 @@
         <ul class="navbar-nav me-auto">
 
           <li class="nav-item">
-            <a class="nav-link {{#if active.friends}}active{{/if}}" href="/profile/social">Friends</a>
+            <a class="nav-link {{#if activeSocial.friends}}active{{/if}}" href="/profile/social" style="padding-left: 0px">Friends</a>
           </li>
 
           <li class="nav-item">
-            <a class="nav-link {{#if active.requests}}active{{/if}}" href="/profile/social/requests">Friend Requests</a>
+            <a class="nav-link {{#if activeSocial.requests}}active{{/if}}" href="/profile/social/requests">Friend Requests</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link {{#if active.sent}}active{{/if}}" href="/profile/social/requests/sent">Sent Requests</a>
+            <a class="nav-link {{#if activeSocial.sent}}active{{/if}}" href="/profile/social/requests/sent">Sent Requests</a>
           </li>
 
         </ul>
