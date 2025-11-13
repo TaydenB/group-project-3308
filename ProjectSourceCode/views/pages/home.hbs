@@ -1,31 +1,20 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Buff Games</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
-
-  <style>
-
+<style>
     .header-title {
       text-align: center;
       font-size: 5rem;
       margin: 20px 0;
-      padding-top: 200px;
     }
     .btn.btn-primary, .btn.btn-secondary {
       display: block;
       margin: auto;
       padding-left: 20px;
     }
-    body{
+    .body-container {
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        height: 50vh;
+        height: 90vh;
         margin: 0;
         text-align: center;
     }
@@ -42,22 +31,12 @@
     .btn:hover{
         opacity: 0.9;
     }
+</style>
 
-  </style>
-
-</head>
-<body>
-  <header>
+<div class="body-container">
     <h1 class="header-title">Buff Games</h1>
-  </header>
-  <main>
     <div class="button-container">
         <button type="button" class="btn btn-primary btn-lg" onclick="window.location.href='/daily'">Daily Game</button>
         <button type="button" class="btn btn-primary btn-lg" onclick="window.location.href='/profile/social'">Social</button>
     </div>
-  </main>
-  <footer>
-
-  </footer>
-</body>
-</html>
+</div>
