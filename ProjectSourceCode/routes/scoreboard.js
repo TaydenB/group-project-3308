@@ -23,4 +23,18 @@ router.get('/scoreboard', async (req, res, next) => {
     };
 });
 
+router.post('/scoreboard', async (req, res, next) => {
+    try {
+        const db = req.app.get('db');
+        const { username, score } = req.body;
+        await db.none(
+            `INSERT INTO scoreboard (username,score) VALUES ($1, $2)`,
+            [username, Number(score)]
+        )
+        res.redirect('/scoreboard')
+    } catch (err) {
+        next(err)
+    };
+});
+
 module.exports = router;
