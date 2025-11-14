@@ -13,6 +13,3 @@
 * Completed the hash function for daily words by @OliverDSchmitz 
 * Add optional prompts for name and email to display in account tab by @JadenStrom 
 * Add redirects for stats and account tabs by @JadenStrom 
-
-
-**Full Changelog**: https://github.com/TaydenB/group-project-3308/commits/week0.0.2
