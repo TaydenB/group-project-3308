@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs'); //  To hash passwords
 const router = express.Router();
 
 router.get("/", (req, res) => {
-  res.redirect('/login');
+  res.render('pages/welcome');
 })
 
 router.get("/login", (req, res) => {

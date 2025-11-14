@@ -11,6 +11,7 @@ const auth = (req, res, next) => {
 };
 router.use(auth);
 
+
 router.get('/profile/social', async (req, res) => {
   const db = req.app.get('db');
   const recievedFriendsQuery = `SELECT u.username FROM friends f 

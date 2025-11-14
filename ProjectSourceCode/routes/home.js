@@ -7,4 +7,10 @@ router.get('/home', async (req, res) => {
 
 });
 
+router.get('/daily', async (req,res) => {
+  
+  res.render('pages/daily.hbs');
+  
+});
+
 module.exports = router;

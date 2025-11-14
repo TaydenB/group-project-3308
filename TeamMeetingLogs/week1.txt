@@ -1,0 +1,11 @@
+1. We decided to focus on functionality more for this week. We are adding some routing and functionality to our project mainly through the social page and the challenge aspect of our game. We also are cleaning up some of the pages visually and creating the html for our actual game.
+
+2. Decided to change some of the social page functionality and design. Decided to alter the users table to use username as the primary key instead of the user_id.
+
+3.
+Tayden: Html for the game page, added routing to the game page
+Oliver: html for scoreboard table and JavaScript to implement scoreboard, and completed the hash function for daily words
+Noah: Make outlines for social pages html and added functionality for accepting/declining friend requests.
+Jaden: Add optional prompts for name and email to display in account tab, and had it take from db and save when exiting the page and coming back. Pushed redirects for stats and account tabs. 
+Brandon: Made a welcome page. CSS styling for other pages
+Joe: Create functionality for the challenge page.
