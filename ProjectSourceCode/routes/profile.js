@@ -24,8 +24,8 @@ router.get('/profile/account', async (req, res) => {
 
   try {
     const row = await db.oneOrNone(
-      'SELECT first_name, last_name, email FROM users WHERE id = $1',
-      [user.id]
+      'SELECT first_name, last_name, email FROM users WHERE username = $1',
+      [user.username]
     );
 
     const first_name = row?.first_name || '';
@@ -61,8 +61,8 @@ router.post('/profile/account', async (req, res) => {
     await db.none(
       `UPDATE users 
        SET first_name = $1, last_name = $2, email = $3 
-       WHERE id = $4`,
-      [first_name || null, last_name || null, email || null, user.id]
+       WHERE username = $4`,
+      [first_name || null, last_name || null, email || null, user.username]
     );
 
     // Keep session in sync so changes show up immediately
