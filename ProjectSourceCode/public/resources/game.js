@@ -45,11 +45,11 @@ function addLetter(letter) {
 function deleteLetter() {
     //if there is a value to delete
     if (tile > 0) {
+        //decrement the tile count
+        tile--;
         //pick correct tile
         const current_tile = rows[selected_row].children[tile];
         //remove the letter from the tile
         current_tile.textContent = "";
-        //decrement the tile count
-        tile--;
     }
 }
