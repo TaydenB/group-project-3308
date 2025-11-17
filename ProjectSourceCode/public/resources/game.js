@@ -20,6 +20,7 @@ document.querySelector(".keyboard-key-delete").addEventListener("click", () => {
     //call deleteLetter function
     deleteLetter();
 });
+
 //for the enter key
 document.querySelector(".keyboard-key-enter").addEventListener("click", () => {
     //call submit word function
@@ -27,7 +28,7 @@ document.querySelector(".keyboard-key-enter").addEventListener("click", () => {
 });
 
 /*Create the functions to make the keys function*/
-//Add Letter function that adds a letter into the tile
+//addLetter function that adds a letter into the tile
 function addLetter(letter) {
     //if within the row
     if (tile < 5){
@@ -35,6 +36,20 @@ function addLetter(letter) {
         const current_tile = rows[selected_row].children[tile];
         //put the letter in the tile
         current_tile.textContent = letter;
+        //increment tile count
         tile++;
+    }
+}
+
+//deleteLetter function that removes a letter from the tile
+function deleteLetter() {
+    //if there is a value to delete
+    if (tile > 0) {
+        //pick correct tile
+        const current_tile = rows[selected_row].children[tile];
+        //remove the letter from the tile
+        current_tile.textContent = "";
+        //decrement the tile count
+        tile--;
     }
 }
