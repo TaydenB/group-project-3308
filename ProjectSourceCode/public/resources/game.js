@@ -2,6 +2,7 @@
 const rows = document.querySelectorAll("#game-board .row");
 let selected_row = 0;
 let tile = 0;
+max_tiles = 5;
 
 /*Create the implementation for the keyboard*/
 //for all keyboard-key classes
@@ -24,14 +25,14 @@ document.querySelector(".keyboard-key-delete").addEventListener("click", () => {
 //for the enter key
 document.querySelector(".keyboard-key-enter").addEventListener("click", () => {
     //call submit word function
-    submitword();
+    submitWord();
 });
 
 /*Create the functions to make the keys function*/
 //addLetter function that adds a letter into the tile
 function addLetter(letter) {
     //if within the row
-    if (tile < 5){
+    if (tile < max_tiles){
         //pick the correct tile
         const current_tile = rows[selected_row].children[tile];
         //put the letter in the tile
@@ -51,5 +52,30 @@ function deleteLetter() {
         const current_tile = rows[selected_row].children[tile];
         //remove the letter from the tile
         current_tile.textContent = "";
+    }
+}
+
+//submitWord function that enters the word
+function submitWord() {
+    //if not enough letters nothing happens
+    if (tile < max_tiles) {
+        return;
+    }
+    //word variable to store values in tiles
+    let word = "";
+    //loop through tiles and store in variable word
+    for (let i=0; i < max_tiles; i++) {
+        word += rows[selected_row].children[i].textContent;
+    }
+    //get answer from database
+    let answer = "";
+    //compare letters in word to letters in answer
+
+    //change rows
+    if (selected_row < 6) {
+        //increment row
+        selected_row++;
+        //start on first tile again
+        tile = 0;
     }
 }
