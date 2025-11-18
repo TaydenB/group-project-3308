@@ -97,4 +97,45 @@ router.get('/profile/stats', (req, res) => {
   });
 });
 
+async function getAllFriends(db, username) {
+    const recievedFriendsQuery = `SELECT u.username, u.first_name, u.last_name FROM friends f 
+    JOIN users u ON u.username = f.user_username WHERE f.friend_username = $1 AND f.status = 'accepted'`;
+    const sentFriendsQuery = `SELECT u.username, u.first_name, u.last_name FROM friends f 
+    JOIN users u ON u.username = f.friend_username WHERE f.user_username = $1 AND f.status = 'accepted'`;
+
+    // Get friends who initially sent the friend request, then get friends who initially recieved the request, then combine
+    const received = await db.any(recievedFriendsQuery, [username]);
+    const sent = await db.any(sentFriendsQuery, [username]);
+    const friends = [...received, ...sent];
+    return friends;
+}
+
+router.get('/profile/display/:username', async (req, res) => {
+  const db = req.app.get('db');
+  const username = req.params.username;
+  
+  try {
+    const user = await db.oneOrNone(`SELECT username, first_name, last_name, email FROM users WHERE username = $1`, [username]);
+    if(user){
+      const full_name = 
+      (user.first_name || user.last_name)
+        ? `${user.first_name} ${user.last_name}`.trim()
+        : null;
+
+      const friends = await getAllFriends(db, username);
+
+      return res.status(200).render('pages/otherProfile', {
+        username: user.username,
+        full_name: full_name,
+        email: user.email,
+        friends: friends
+      });
+    }
+    return res.status(400).render('pages/noOtherProfile', { message: "User: '" + username + "' does not exist", error: true });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).send('Error displaying profile');
+  }
+});
+
 module.exports = router;
