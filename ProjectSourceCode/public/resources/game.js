@@ -72,7 +72,7 @@ function submitWord() {
     //compare letters in word to letters in answer
 
     //change rows
-    if (selected_row < 6) {
+    if (selected_row < 5) {
         //increment row
         selected_row++;
         //start on first tile again
