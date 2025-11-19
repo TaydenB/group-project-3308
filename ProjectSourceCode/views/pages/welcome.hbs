@@ -1,0 +1,56 @@
+<style>
+    .header-title {
+      text-align: center;
+      font-size: 5rem;
+      margin: 20px 0;
+      color: white;
+      text-shadow: 2px 2px 4px #000000;
+    }
+    .btn.btn-primary, .btn.btn-secondary {
+      display: block;
+      margin: auto;
+      padding-left: 20px;
+    }
+    .body-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        min-height: 120vh;
+        margin: 0;
+        text-align: center;
+        background-image: url('/images/buffs_pic.png');
+        background-repeat: no-repeat;
+        background-position: center 0px;
+        background-size: 50%;
+        padding-top: 100px;
+    }
+    .button-container {
+        display: flex;
+        gap: 1rem;
+    }
+    .btn{
+        border-radius: 50px;
+        padding: 0.6rem 1.5rem;
+        font-size: 1.1rem;
+        min-width: 180px;
+        background-color: white;
+        color: black;
+        border: 2px solid black;
+    }
+    .btn:hover{
+        opacity: 0.9;
+        background-color: black;
+        color: white;
+        border-color: black;
+    }
+</style>
+<div class="body-container">
+    <h1 class="header-title">Welcome to Buff Games!</h1>
+    <p style="color: white;">If you already have an account, please log in.</p>
+    <p style="color: white;">If you are new here, please register for an account.</p>
+    <div class="button-container">
+        <button type="button" class="btn btn-primary btn-lg" onclick="location.href='/login'">Login</button>
+        <button type="button" class="btn btn-primary btn-lg" onclick="location.href='/register'">Register</button>
+    </div>
+</div>

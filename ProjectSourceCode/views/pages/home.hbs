@@ -1,0 +1,42 @@
+<style>
+    .header-title {
+      text-align: center;
+      font-size: 5rem;
+      margin: 20px 0;
+    }
+    .btn.btn-primary, .btn.btn-secondary {
+      display: block;
+      margin: auto;
+      padding-left: 20px;
+    }
+    .body-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 90vh;
+        margin: 0;
+        text-align: center;
+    }
+    .button-container {
+        display: flex;
+        gap: 1rem;
+    }
+    .btn{
+        border-radius: 50px;
+        padding: 0.6rem 1.5rem;
+        font-size: 1.1rem;
+        min-width: 180px;
+    }
+    .btn:hover{
+        opacity: 0.9;
+    }
+</style>
+
+<div class="body-container">
+    <h1 class="header-title">Buff Games</h1>
+    <div class="button-container">
+        <button type="button" class="btn btn-primary btn-lg" onclick="window.location.href='/daily'">Daily Game</button>
+        <button type="button" class="btn btn-primary btn-lg" onclick="window.location.href='/profile/social'">Social</button>
+    </div>
+</div>

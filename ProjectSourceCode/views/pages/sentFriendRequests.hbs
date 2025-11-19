@@ -1,0 +1,28 @@
+{{#> socialWrapper}}
+<form method="POST" action="/profile/social/requests/sent" class="mb-4">
+    <label for="add_friend" class="form-label">Add Friend</label>
+    <div class="input-group">
+        <input type="text" name="add_friend" id="add_friend" class="form-control" placeholder="Enter username" />
+        <button type="submit" class="btn btn-primary">Add</button>
+    </div>
+</form>
+<ul class="list-group">
+    <p>Pending</p>
+    {{#each friends}}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div>
+                <strong>{{first_name}} {{last_name}}</strong>
+                <p class="mb-0">@{{username}}</p>
+            </div>
+            <strong>{{first_name}} {{last_name}}</strong>
+            <form method="POST" action="/profile/social/requests/sent/cancel">
+                <input type="hidden" name="friend_username" value="{{username}}">
+                <button type="submit" class="btn btn-danger float-end">Cancel</button>
+            </form>
+        </li>
+    {{/each}}
+</ul>
+{{/socialWrapper}}
+
+
+{{> message}}

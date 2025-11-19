@@ -22,6 +22,7 @@ const hbs = handlebars.create({
   extname: 'hbs',
   layoutsDir: __dirname + '/views/layouts',
   partialsDir: __dirname + '/views/partials',
+  defaultLayout: 'main',
 });
 
 // database configuration
@@ -45,6 +46,7 @@ db.connect()
     console.log('ERROR:', error.message || error);
   });
 
+app.set('db', db);
 // *****************************************************
 // <!-- Section 3 : App Settings -->
 // *****************************************************
@@ -70,95 +72,30 @@ app.use(
   })
 );
 
+//sets user variable to be used by handlebars
+app.use((req, res, next) => {
+  res.locals.user = req.session.user;
+  next();
+});
+
+app.use(express.static(path.join(__dirname, 'public')));
+
 
 // *****************************************************
 // <!-- Section 4 : API Routes -->
 // *****************************************************
 
-// TODO - Include your API routes here
-app.get("/", (req, res) =>{
-    res.redirect('/login');
-})
+app.use('/', require('./routes/auth'));
+app.use('/', require('./routes/profile'));
+app.use('/', require('./routes/challenge'));
+app.use('/', require('./routes/home'));
+app.use('/', require('./routes/social'));
+app.use('/', require('./routes/scoreboard'));
 
-app.get("/login", (req, res) =>{
-    res.render('pages/login');
-})
-
-app.get("/register", (req, res) =>{
-    res.render('pages/register');
-})
-
-app.post("/register", async (req, res) =>{
-    const username = req.body.username;
-
-    const hash = await bcrypt.hash(req.body.password, 10);
-    const query = `INSERT INTO users (username, password) VALUES ($1, $2) RETURNING *;`
-
-    try{
-        await db.one(query, [username, hash]);
-
-        res.redirect('/');
-    }
-    catch(err){
-        const error = true;
-        console.log(err);
-        const errorMessage = "Username already exists";
-        
-        res.render('pages/register', {message: errorMessage, error});
-    }
-})
-
-app.post("/login", async (req, res) =>{
-    const username = req.body.username;
-
-    const query = `SELECT * FROM users WHERE username = $1;`;
-
-    try{
-        const user = await db.one(query, [username]);
-        console.log(username, user);
-        if (!user) {
-            return res.redirect("/register");
-        }
-        const match = await bcrypt.compare(req.body.password, user.password);
-        console.log(match);
-
-        if (match) {
-            req.session.user = user;
-            req.session.save();
-            res.redirect("/profile");
-        } else {
-            const errorMessage = "Incorrect password. Please try again.";
-            res.render("pages/login", { message: errorMessage, error: true });
-        }
-        
-    }
-    catch (err) {
-        console.log(err);
-        res.redirect("/register");
-    }
-})
-// Authentication Middleware.
-const auth = (req, res, next) => {
-  if (!req.session.user) {
-    // Default to login page.
-    return res.redirect('/login');
-  }
-  next();
-};
-app.use(auth);
-
-app.get('/profile', async (req, res) => {
-    
-    res.render('pages/profile.hbs');
-    
-});
-
-app.get('/logout', async (req, res) => {
-    
-});
 // *****************************************************
 // <!-- Section 5 : Start Server-->
 // *****************************************************
 // starting the server and keeping the connection open to listen for more requests
-app.listen(3000);
 console.log('Server is listening on port 3000');
+
+module.exports = app.listen(3000);
