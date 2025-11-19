@@ -3,7 +3,7 @@ const rows = document.querySelectorAll("#game-board .row");
 let game
 let selected_row = 0;
 let tile = 0;
-let answer = pick
+let answer;
 max_tiles = 5;
 
 /*Create the implementation for the keyboard*/
@@ -85,8 +85,7 @@ function submitWord() {
         showMessage("Not a word!");
         return;
     }
-    //get answer from database
-    let answer = "";
+
     //compare letters in word to letters in answer
 
     //change rows
