@@ -1,11 +1,15 @@
 /*Select the Tiles*/
+import { WordSelector } from "./hash.js";
 const rows = document.querySelectorAll("#game-board .row");
-let game
 let selected_row = 0;
 let tile = 0;
-let answer;
-max_tiles = 5;
-
+let answer = null;
+let max_tiles = 5;
+async function run() {
+    const selector = new WordSelector('/resources/words.txt');
+    answer = await selector.pickWord();
+}
+run();
 /*Create the implementation for the keyboard*/
 //for all keyboard-key classes
 document.querySelectorAll(".keyboard-key").forEach(key => {
@@ -73,6 +77,10 @@ function submitWord() {
         showMessage("Not 5-letters!");
         return
     }
+    if (answer == null) {
+        run();
+        console.log(answer);
+    }
 
     //word variable to store values in tiles
     let word = "";
@@ -86,7 +94,12 @@ function submitWord() {
         return;
     }
 
-    //compare letters in word to letters in answer
+    colorRow(word, rows[selected_row]);
+
+    if (word == answer) {
+        showMessage("Correct!");
+        return;
+    }
 
     //change rows
     if (selected_row < 5) {
@@ -94,5 +107,33 @@ function submitWord() {
         selected_row++;
         //start on first tile again
         tile = 0;
+    }
+}
+
+function colorRow(word, row) {
+    const result = Array(5).fill('absent');
+    const wordArr = word.split('');
+    const answerArr = answer.split('');
+    //greens
+    for (let i = 0; i < max_tiles; i++) {
+        if (wordArr[i] === answerArr[i]) {
+            result[i] = 'correct';
+            answerArr[i] = null;
+            wordArr[i] = null;
+        }
+    }
+    //yellows
+    for (let i = 0; i < max_tiles; i++) {
+        if (wordArr[i] !== null) {
+            let idx = answerArr.indexOf(wordArr[i]);
+            if (idx !== -1) {
+                result[i] = 'present';
+                answerArr[idx] = null;
+            }
+        }
+    }
+    const tiles = row.querySelectorAll(".tile");
+    for (let i = 0; i < max_tiles; i++) {
+        tiles[i].classList.add(result[i]);
     }
 }

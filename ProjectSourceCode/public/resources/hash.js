@@ -1,4 +1,5 @@
-export class wordSelector {
+export class WordSelector {
+
     constructor(url = "words.txt") { //url kept in this.url
         this.url = url;
     }
