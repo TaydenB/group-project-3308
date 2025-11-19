@@ -5,6 +5,7 @@ let selected_row = 0;
 let tile = 0;
 let answer = null;
 let max_tiles = 5;
+let guesses = 0;
 async function run() {
     const selector = new WordSelector('/resources/words.txt');
     answer = await selector.pickWord();
@@ -72,6 +73,10 @@ function deleteLetter() {
 
 //submitWord function that enters the word
 function submitWord() {
+    if (guesses >= 6) {
+        showMessage("No more guesses!");
+        return;
+    }
     //if not enough letters nothing happens
     if (tile != max_tiles) {
         showMessage("Not 5-letters!");
@@ -93,11 +98,15 @@ function submitWord() {
         showMessage("Not a word!");
         return;
     }
-
+    guesses += 1;
     colorRow(word, rows[selected_row]);
 
     if (word == answer) {
         showMessage("Correct!");
+        return;
+    }
+    if (guesses == 6) {
+        showMessage(`Word is ${answer}`);
         return;
     }
 
