@@ -13,22 +13,22 @@ router.use(auth);
 
 
 router.get('/profile/social', async (req, res) => {
-    const db = req.app.get('db');
-    const recievedFriendsQuery = `SELECT u.id, u.username FROM friends f 
-    JOIN users u ON u.id = f.user_id WHERE f.friend_id = $1 AND f.status = 'accepted'`;
-    const sentFriendsQuery = `SELECT u.id, u.username FROM friends f 
-    JOIN users u ON u.id = f.friend_id WHERE f.user_id = $1 AND f.status = 'accepted'`;
+  const db = req.app.get('db');
+  const recievedFriendsQuery = `SELECT u.username FROM friends f 
+  JOIN users u ON u.username = f.user_username WHERE f.friend_username = $1 AND f.status = 'accepted'`;
+  const sentFriendsQuery = `SELECT u.username FROM friends f 
+  JOIN users u ON u.username = f.friend_username WHERE f.user_username = $1 AND f.status = 'accepted'`;
 
-    const socialObj = {
+  const socialObj = {
         userUsername: req.session.user.username,
         active: { social: true },
         activeSocial: { friends: true },
         friends: []
     }
-    try{
+  try {
         // Get friends who initially sent the friend request, then get friends who initially recieved the request, then combine
-        const recievedFreinds = await db.any(recievedFriendsQuery, [req.session.user.id]);
-        const sentFriends = await db.any(sentFriendsQuery, [req.session.user.id]);
+        const recievedFreinds = await db.any(recievedFriendsQuery, [req.session.user.username]);
+        const sentFriends = await db.any(sentFriendsQuery, [req.session.user.username]);
         const friends = [...recievedFreinds, ...sentFriends];
 
         console.log(friends, recievedFreinds, sentFriends);
@@ -39,132 +39,130 @@ router.get('/profile/social', async (req, res) => {
         console.log(err);
         res.status(500).send('Error loading friends');
     }
-  
+
 });
 
 router.get('/profile/social/requests', async (req, res) => {
-    const db = req.app.get('db');
-    const query = `SELECT u.id, u.username FROM friends f 
-    JOIN users u ON u.id = f.user_id WHERE f.friend_id = $1 AND f.status = 'pending'`;
+  const db = req.app.get('db');
+  const query = `SELECT u.username FROM friends f 
+  JOIN users u ON u.username = f.user_username WHERE f.friend_username = $1 AND f.status = 'pending'`;
 
-    const socialObj = {
+  const socialObj = {
         userUsername: req.session.user.username,
         active: { social: true },
         activeSocial: { requests: true },
         friends: []
     }
-    try{
-        const friends = await db.any(query, [req.session.user.id]);
-        console.log(friends);
-        
-        socialObj.friends = friends;
+  try {
+    const friends = await db.any(query, [req.session.user.username]);
+    console.log(friends);
+    socialObj.friends = friends;
         res.status(200).render('pages/friendRequests.hbs', socialObj);
-    }
-    catch (err) {
-        console.log(err);
-        res.status(500).send('Error loading friend requests');
-    }
-  
+  }
+  catch (err) {
+    console.log(err);
+    res.status(500).send('Error loading friend requests');
+  }
+
 });
 router.post("/profile/social/requests/decline", async (req, res) => {
-    const db = req.app.get('db');
-    const friendId = req.body.friend_id;
-    const userId = req.session.user.id;
+  const db = req.app.get('db');
+  const friendUsername = req.body.friend_username;
+  const userUsername = req.session.user.username;
 
-    const socialObj = {
+  const socialObj = {
         userUsername: req.session.user.username,
         active: { social: true },
         activeSocial: { requests: true },
         friends: [],
         error: false
     }
-    try {
-        
-        const query = `DELETE FROM friends WHERE user_id = $1 AND friend_id = $2;`
-        await db.none(query, [friendId, userId]);
-        
-        // Update requests html
-        const queryFriendRequests = `SELECT u.id, u.username FROM friends f 
-        JOIN users u ON u.id = f.user_id WHERE f.friend_id = $1 AND f.status = 'pending'`;
-        const friends = await db.any(queryFriendRequests, [userId]);
+  try {
 
-        socialObj.friends = friends;
-        socialObj["message"] = "Request Declined";
+    const query = `DELETE FROM friends WHERE user_username = $1 AND friend_username = $2;`
+    await db.none(query, [friendUsername, userUsername]);
 
-        return res.status(201).render("pages/friendRequests.hbs", socialObj);
-    }
-    catch (err) {
-        console.log(err);
-        res.status(500).send('Error declining friend requests');
-    }
+    // Update requests html
+    const queryFriendRequests = `SELECT u.username FROM friends f 
+    JOIN users u ON u.username = f.user_username WHERE f.friend_username = $1 AND f.status = 'pending'`;
+    const friends = await db.any(queryFriendRequests, [userUsername]);
+
+    socialObj.friends = friends;
+    socialObj["message"] = "Request Declined";
+
+    return res.status(201).render("pages/friendRequests.hbs", socialObj);
+  }
+  catch (err) {
+    console.log(err);
+    res.status(500).send('Error declining friend requests');
+  }
 });
 router.post("/profile/social/requests/accept", async (req, res) => {
-    const db = req.app.get('db');
-    const friendId = req.body.friend_id;
-    const userId = req.session.user.id;
+  const db = req.app.get('db');
+  const friendUsername = req.body.friend_username;
+  const userUsername = req.session.user.username;
 
-    const socialObj = {
+  const socialObj = {
         userUsername: req.session.user.username,
         active: { social: true },
         activeSocial: { requests: true },
         friends: [],
         error: false
     }
+  try {
 
-    try {
-        const query = `UPDATE friends SET status = 'accepted' WHERE user_id = $1 AND friend_id = $2;`
-        await db.none(query, [friendId, userId]);
-        
-        // Update requests html
-        const queryFriendRequests = `SELECT u.id, u.username FROM friends f 
-        JOIN users u ON u.id = f.user_id WHERE f.friend_id = $1 AND f.status = 'pending'`;
-        const friends = await db.any(queryFriendRequests, [userId]);
+    const query = `UPDATE friends SET status = 'accepted' WHERE user_username = $1 AND friend_username = $2;`
+    await db.none(query, [friendUsername, userUsername]);
 
-        socialObj.friends = friends;
-        socialObj["message"] = "Request Accepted";
+    // Update requests html
+    const queryFriendRequests = `SELECT u.username FROM friends f 
+    JOIN users u ON u.username = f.user_username WHERE f.friend_username = $1 AND f.status = 'pending'`;
+    const friends = await db.any(queryFriendRequests, [userUsername]);
 
-        return res.status(201).render("pages/friendRequests.hbs", socialObj);
-    }
-    catch (err) {
-        console.log(err);
-        res.status(500).send('Error accepting friend request');
-    }
+    socialObj.friends = friends;
+    socialObj["message"] = "Request Accepted";
+
+    return res.status(201).render("pages/friendRequests.hbs", socialObj)
+  }
+  catch (err) {
+    console.log(err);
+    res.status(500).send('Error accepting friend request');
+  }
 });
 router.get('/profile/social/requests/sent', async (req, res) => {
-    const db = req.app.get('db');
-    const query = `SELECT u.id, u.username FROM friends f 
-    JOIN users u ON u.id = f.friend_id WHERE f.user_id = $1 AND f.status = 'pending'`;
+  const db = req.app.get('db');
+  const query = `SELECT u.username FROM friends f 
+  JOIN users u ON u.username = f.friend_username WHERE f.user_username = $1 AND f.status = 'pending'`;
 
-    const socialObj = {
+  const socialObj = {
         userUsername: req.session.user.username,
         active: { social: true },
         activeSocial: { sent: true },
         friends: []
     }
 
-    try{
-        const friends = await db.any(query, [req.session.user.id]);
-        console.log(friends);
+  try {
+    const friends = await db.any(query, [req.session.user.username]);
+    console.log(friends);
+    
+    socialObj.friends = friends;
+    res.status(200).render('pages/sentFriendRequests.hbs', socialObj);
+  }
+  catch (err) {
+    console.log(err);
+    res.status(500).send('Error loading sent friend requests');
+  }
 
-        socialObj.friends = friends;
-        res.status(200).render('pages/sentFriendRequests.hbs', socialObj);
-    }
-    catch (err) {
-        console.log(err);
-        res.status(500).send('Error loading sent friend requests');
-    }
-  
 });
 router.post("/profile/social/requests/sent", async (req, res) => {
-    const db = req.app.get('db');
-    const friendUsername = req.body.add_friend;
-    const userId = req.session.user.id;
+  const db = req.app.get('db');
+  const friendUsername = req.body.add_friend;
 
-    const queryUserExists = `SELECT * FROM users WHERE username = $1`
-    const querySentFriends = `SELECT u.id, u.username FROM friends f 
-    JOIN users u ON u.id = f.friend_id WHERE f.user_id = $1 AND f.status = 'pending'`;
+  const queryUserExists = `SELECT * FROM users WHERE username = $1`
+  const querySentFriends = `SELECT u.username FROM friends f 
+  JOIN users u ON u.username = f.friend_username WHERE f.user_username = $1 AND f.status = 'pending'`;
 
-    const socialObj = {
+  const socialObj = {
         userUsername: req.session.user.username,
         active: { social: true },
         activeSocial: { sent: true },
@@ -172,62 +170,62 @@ router.post("/profile/social/requests/sent", async (req, res) => {
         message: "",
         error: false
     }
-    try {
-        let friends = await db.any(querySentFriends, [userId]);
-        socialObj.friends = friends;
+  const userUsername = req.session.user.username;
+  try {
+    let friends = await db.any(querySentFriends, [userUsername]);
+    socialObj.friends = friends;
 
-        // Check if trying to friend self
-        if(friendUsername == req.session.user.username){
-            const errorMessage = "Can't friend yourself.";
-            socialObj.message = errorMessage;
-            socialObj.error = true;
-            return res.status(400).render("pages/sentFriendRequests.hbs", socialObj);
-        }
-
-        // Check for valid username
-        const userFriend = await db.oneOrNone(queryUserExists, [friendUsername]);
-        console.log(userFriend);
-        if (!userFriend) {
-            const errorMessage = "Username does not exist.";
-            socialObj.message = errorMessage;
-            socialObj.error = true;
-            return res.status(400).render("pages/sentFriendRequests.hbs", socialObj);
-        }
-        
-        // Check if friendship already exists
-        const queryFriendshipExists = `SELECT * FROM friends 
-        WHERE ( (user_id = $1 AND friend_id = $2) OR (user_id = $2 AND friend_id = $1) );`
-        const existing = await db.any(queryFriendshipExists, [userId, userFriend.id]);
-
-        if(existing.length > 0){
-            const errorMessage = "Already existing friendship or request.";
-            socialObj.message = errorMessage;
-            socialObj.error = true;
-            return res.status(400).render("pages/sentFriendRequests.hbs", socialObj);
-        }
-
-        // Add new friend
-        const newFriendQuery = `INSERT INTO friends (user_id, friend_id, status) VALUES ($1, $2, 'pending');`
-        await db.none(newFriendQuery, [userId, userFriend.id]);
-
-        // Update html
-        friends = await db.any(querySentFriends, [userId]);
-        
-        socialObj.message = "Friend request sent successfully";
-        socialObj.friends = friends;
-        return res.status(201).render("pages/sentFriendRequests.hbs", socialObj);
+    // Check if trying to friend self
+    if(friendUsername == req.session.user.username){
+        const errorMessage = "Can't friend yourself.";
+        socialObj.message = errorMessage;
+        socialObj.error = true;
+        return res.status(400).render("pages/sentFriendRequests.hbs", socialObj);
     }
-    catch (err) {
-        console.log(err);
-        res.status(500).send('Unexpected error when sending friend request');
+
+    // Check for valid username
+    const userFriend = await db.oneOrNone(queryUserExists, [friendUsername]);
+    console.log(userFriend);
+    if (!userFriend) {
+        const errorMessage = "Username does not exist.";
+        socialObj.message = errorMessage;
+        socialObj.error = true;
+        return res.status(400).render("pages/sentFriendRequests.hbs", socialObj);
     }
+
+    // Check if friendship already exists
+    const queryFriendshipExists = `SELECT * FROM friends 
+        WHERE ( (user_username = $1 AND friend_username = $2) OR (user_username = $2 AND friend_username = $1) );`
+    const existing = await db.any(queryFriendshipExists, [userUsername, userFriend.username]);
+    if (existing.length > 0) {
+        const errorMessage = "Already existing friendship or request.";
+        socialObj.message = errorMessage;
+        socialObj.error = true;
+        return res.status(400).render("pages/sentFriendRequests.hbs", socialObj);
+    }
+
+    // Add new friend
+    const newFriendQuery = `INSERT INTO friends (user_username, friend_username, status) VALUES ($1, $2, 'pending');`
+    await db.none(newFriendQuery, [userUsername, userFriend.username]);
+
+    // Update html
+    friends = await db.any(querySentFriends, [userUsername]);
+
+    socialObj.message = "Friend request sent successfully";
+    socialObj.friends = friends;
+    return res.status(201).render("pages/sentFriendRequests.hbs", socialObj);
+  }
+  catch (err) {
+    console.log(err);
+    res.status(500).send('Unexpected error when sending friend request');
+  }
 });
 router.post("/profile/social/requests/sent/cancel", async (req, res) => {
-    const db = req.app.get('db');
-    const friendId = req.body.friend_id;
-    const userId = req.session.user.id;
+  const db = req.app.get('db');
+  const friendUsername = req.body.friend_username;
+  const userUsername = req.session.user.username;
 
-    const socialObj = {
+  const socialObj = {
         userUsername: req.session.user.username,
         active: { social: true },
         activeSocial: { sent: true },
@@ -235,23 +233,24 @@ router.post("/profile/social/requests/sent/cancel", async (req, res) => {
         message: "",
         error: false
     }
+  try {
 
-    try {
-        const query = `DELETE FROM friends WHERE user_id = $1 AND friend_id = $2;`
-        await db.none(query, [userId, friendId]);
-        
-        // Update sent requests html
-        const querySentFriends = `SELECT u.id, u.username FROM friends f 
-        JOIN users u ON u.id = f.friend_id WHERE f.user_id = $1 AND f.status = 'pending'`;
-        const friends = await db.any(querySentFriends, [userId]);
-        socialObj.message = "Request Cancelled Successfully";
-        socialObj.friends = friends;
-        return res.status(201).render("pages/sentFriendRequests.hbs", socialObj);
-    }
-    catch (err) {
-        console.log(err);
-        res.status(500).send('Error cancelling friend request');
-    }
+    const query = `DELETE FROM friends WHERE user_username = $1 AND friend_username = $2;`
+    await db.none(query, [userUsername, friendUsername]);
+    console.log(userUsername, friendUsername);
+    // Update sent requests html
+    const querySentFriends = `SELECT u.username FROM friends f 
+    JOIN users u ON u.username = f.friend_username WHERE f.user_username = $1 AND f.status = 'pending'`;
+    
+    const friends = await db.any(querySentFriends, [userUsername]);
+    socialObj.message = "Request Cancelled Successfully";
+    socialObj.friends = friends;
+    return res.status(201).render("pages/sentFriendRequests.hbs", socialObj);
+  }
+  catch (err) {
+    console.log(err);
+    res.status(500).send('Error cancelling friend request');
+  }
 });
 
 module.exports = router;

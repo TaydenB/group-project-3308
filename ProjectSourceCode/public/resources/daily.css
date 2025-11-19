@@ -1,0 +1,32 @@
+.tile {
+    width: 55px;
+    height: 55px;
+    font-size: 16px;
+    font-weight: bold;
+    text-transform: uppercase;
+    border:2px solid black;
+    border-radius: 6px;
+    margin: 3px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+    }
+.keyboard-key {
+    width: 40px;
+    margin: 2px;
+    font-weight: bold;
+    }
+.keyboard-key-delete {
+    width: 60px;
+    margin: 2px;
+    font-weight: bold;
+}
+.keyboard-key-enter {
+    width: 80px;
+    margin: 2px;
+    font-weight: bold;
+}
+#keyboard {
+    width: 500px;
+}
