@@ -1,9 +1,16 @@
 /*Select the Tiles*/
+import { WordSelector } from "./hash.js";
 const rows = document.querySelectorAll("#game-board .row");
 let selected_row = 0;
 let tile = 0;
-max_tiles = 5;
-
+let answer = null;
+let max_tiles = 5;
+let guesses = 0;
+async function run() {
+    const selector = new WordSelector('/resources/words.txt');
+    answer = await selector.pickWord();
+}
+run();
 /*Create the implementation for the keyboard*/
 //for all keyboard-key classes
 document.querySelectorAll(".keyboard-key").forEach(key => {
@@ -32,7 +39,7 @@ document.querySelector(".keyboard-key-enter").addEventListener("click", () => {
 //addLetter function that adds a letter into the tile
 function addLetter(letter) {
     //if within the row
-    if (tile < max_tiles){
+    if (tile < max_tiles) {
         //pick the correct tile
         const current_tile = rows[selected_row].children[tile];
         //put the letter in the tile
@@ -40,6 +47,15 @@ function addLetter(letter) {
         //increment tile count
         tile++;
     }
+}
+
+function showMessage(message) {
+    const msg = document.getElementById("message");
+    msg.textContent = message;
+    msg.classList.add("show");
+    setTimeout(() => {
+        msg.classList.remove("show");
+    }, 1500);
 }
 
 //deleteLetter function that removes a letter from the tile
@@ -57,19 +73,42 @@ function deleteLetter() {
 
 //submitWord function that enters the word
 function submitWord() {
-    //if not enough letters nothing happens
-    if (tile < max_tiles) {
+    if (guesses >= 6) {
+        showMessage("No more guesses!");
         return;
     }
+    //if not enough letters nothing happens
+    if (tile != max_tiles) {
+        showMessage("Not 5-letters!");
+        return
+    }
+    if (answer == null) {
+        run();
+        console.log(answer);
+    }
+
     //word variable to store values in tiles
     let word = "";
     //loop through tiles and store in variable word
-    for (let i=0; i < max_tiles; i++) {
+    for (let i = 0; i < max_tiles; i++) {
         word += rows[selected_row].children[i].textContent;
     }
-    //get answer from database
-    let answer = "";
-    //compare letters in word to letters in answer
+    word = word.toLowerCase();
+    if (!sowpods.includes(word)) {
+        showMessage("Not a word!");
+        return;
+    }
+    guesses += 1;
+    colorRow(word, rows[selected_row]);
+
+    if (word == answer) {
+        showMessage("Correct!");
+        return;
+    }
+    if (guesses == 6) {
+        showMessage(`Word is ${answer}`);
+        return;
+    }
 
     //change rows
     if (selected_row < 5) {
@@ -77,5 +116,33 @@ function submitWord() {
         selected_row++;
         //start on first tile again
         tile = 0;
+    }
+}
+
+function colorRow(word, row) {
+    const result = Array(5).fill('absent');
+    const wordArr = word.split('');
+    const answerArr = answer.split('');
+    //greens
+    for (let i = 0; i < max_tiles; i++) {
+        if (wordArr[i] === answerArr[i]) {
+            result[i] = 'correct';
+            answerArr[i] = null;
+            wordArr[i] = null;
+        }
+    }
+    //yellows
+    for (let i = 0; i < max_tiles; i++) {
+        if (wordArr[i] !== null) {
+            let idx = answerArr.indexOf(wordArr[i]);
+            if (idx !== -1) {
+                result[i] = 'present';
+                answerArr[idx] = null;
+            }
+        }
+    }
+    const tiles = row.querySelectorAll(".tile");
+    for (let i = 0; i < max_tiles; i++) {
+        tiles[i].classList.add(result[i]);
     }
 }
