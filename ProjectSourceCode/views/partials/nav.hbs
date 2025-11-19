@@ -24,7 +24,7 @@
           {{/unless}}
           {{#if user}}
           <li class="nav-item">
-            <a class="nav-link" href="/profile">Account</a>
+            <a class="nav-link" href="/profile">Profile</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="/challenge">Challenge</a>
@@ -32,10 +32,11 @@
           {{/if}}
 
         </ul>
-
+        {{#if user}}
         <div class="nav-item me-1">
           <a class="nav-link" href="/logout">Logout</a>
         </div>
+        {{/if}}
 
       </div>
     </div>

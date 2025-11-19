@@ -1,7 +1,9 @@
 /*Select the Tiles*/
 const rows = document.querySelectorAll("#game-board .row");
+let game
 let selected_row = 0;
 let tile = 0;
+let answer = pick
 max_tiles = 5;
 
 /*Create the implementation for the keyboard*/
@@ -32,7 +34,7 @@ document.querySelector(".keyboard-key-enter").addEventListener("click", () => {
 //addLetter function that adds a letter into the tile
 function addLetter(letter) {
     //if within the row
-    if (tile < max_tiles){
+    if (tile < max_tiles) {
         //pick the correct tile
         const current_tile = rows[selected_row].children[tile];
         //put the letter in the tile
@@ -40,6 +42,15 @@ function addLetter(letter) {
         //increment tile count
         tile++;
     }
+}
+
+function showMessage(message) {
+    const msg = document.getElementById("message");
+    msg.textContent = message;
+    msg.classList.add("show");
+    setTimeout(() => {
+        msg.classList.remove("show");
+    }, 1500);
 }
 
 //deleteLetter function that removes a letter from the tile
@@ -58,14 +69,21 @@ function deleteLetter() {
 //submitWord function that enters the word
 function submitWord() {
     //if not enough letters nothing happens
-    if (tile < max_tiles) {
-        return;
+    if (tile != max_tiles) {
+        showMessage("Not 5-letters!");
+        return
     }
+
     //word variable to store values in tiles
     let word = "";
     //loop through tiles and store in variable word
-    for (let i=0; i < max_tiles; i++) {
+    for (let i = 0; i < max_tiles; i++) {
         word += rows[selected_row].children[i].textContent;
+    }
+    word = word.toLowerCase();
+    if (!sowpods.includes(word)) {
+        showMessage("Not a word!");
+        return;
     }
     //get answer from database
     let answer = "";
