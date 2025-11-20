@@ -6,6 +6,15 @@ let tile = 0;
 let answer = null;
 let max_tiles = 5;
 let guesses = 0;
+const START_SCORE = 1000;
+const TIME_LIMIT_MS = 5 * 60 * 1000; // 5 minutes in ms 
+let guessesUsed = 0;
+let gameOver = false;
+let score = 0;
+
+/* TIMER STATE */
+let startTime = Date.now();
+let timerInterval = setInterval(updateTimer, 1000);
 async function run() {
     const selector = new WordSelector('/resources/words.txt');
     answer = await selector.pickWord();
@@ -144,5 +153,36 @@ function colorRow(word, row) {
     const tiles = row.querySelectorAll(".tile");
     for (let i = 0; i < max_tiles; i++) {
         tiles[i].classList.add(result[i]);
+    }
+}
+
+function getElapsedMs() {
+    return Date.now() - startTime; 
+}
+
+function updateTimer() {
+    if (gameOver) {
+        clearInterval(timerInterval);
+        return;
+    }
+
+    const elapsed = getElapsedMs();
+    let remaining = TIME_LIMIT_MS - elapsed;
+
+    if (remaining <= 0) {
+        remaining = 0;
+        gameOver = true;
+        score = 0; // timed out now score = 0
+        clearInterval(timerInterval);
+        showResult(false, "time");
+    }
+
+    const totalSeconds = Math.floor(remaining / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+
+    const timerElem = document.getElementById("timer");
+    if (timerElem) {
+        timerElem.textContent = `${minutes}:${seconds.toString().padStart(2, "0")}`;
     }
 }
