@@ -1,5 +1,7 @@
+const { getChallengeFromUsers, getAllFriends } = require('../public/resources/socialHelpers.js');
 const express = require('express'); // To build an application server or API
 const router = express.Router();
+const sowpods = require('sowpods-five');
 
 // Authentication Middleware.
 const auth = (req, res, next) => {
@@ -11,13 +13,8 @@ const auth = (req, res, next) => {
 };
 router.use(auth);
 
-
 router.get('/profile/social', async (req, res) => {
   const db = req.app.get('db');
-  const recievedFriendsQuery = `SELECT u.username FROM friends f 
-  JOIN users u ON u.username = f.user_username WHERE f.friend_username = $1 AND f.status = 'accepted'`;
-  const sentFriendsQuery = `SELECT u.username FROM friends f 
-  JOIN users u ON u.username = f.friend_username WHERE f.user_username = $1 AND f.status = 'accepted'`;
 
   const socialObj = {
         userUsername: req.session.user.username,
@@ -26,12 +23,8 @@ router.get('/profile/social', async (req, res) => {
         friends: []
     }
   try {
-        // Get friends who initially sent the friend request, then get friends who initially recieved the request, then combine
-        const recievedFreinds = await db.any(recievedFriendsQuery, [req.session.user.username]);
-        const sentFriends = await db.any(sentFriendsQuery, [req.session.user.username]);
-        const friends = [...recievedFreinds, ...sentFriends];
-
-        console.log(friends, recievedFreinds, sentFriends);
+        const friends = await getAllFriends(db, req.session.user.username);
+        console.log(friends);
         socialObj.friends = friends;
         res.status(200).render('pages/social.hbs', socialObj);
     }
@@ -44,7 +37,7 @@ router.get('/profile/social', async (req, res) => {
 
 router.get('/profile/social/requests', async (req, res) => {
   const db = req.app.get('db');
-  const query = `SELECT u.username FROM friends f 
+  const query = `SELECT u.username, u.first_name, u.last_name FROM friends f 
   JOIN users u ON u.username = f.user_username WHERE f.friend_username = $1 AND f.status = 'pending'`;
 
   const socialObj = {
@@ -83,7 +76,7 @@ router.post("/profile/social/requests/decline", async (req, res) => {
     await db.none(query, [friendUsername, userUsername]);
 
     // Update requests html
-    const queryFriendRequests = `SELECT u.username FROM friends f 
+    const queryFriendRequests = `SELECT u.username, u.first_name, u.last_name FROM friends f 
     JOIN users u ON u.username = f.user_username WHERE f.friend_username = $1 AND f.status = 'pending'`;
     const friends = await db.any(queryFriendRequests, [userUsername]);
 
@@ -115,7 +108,7 @@ router.post("/profile/social/requests/accept", async (req, res) => {
     await db.none(query, [friendUsername, userUsername]);
 
     // Update requests html
-    const queryFriendRequests = `SELECT u.username FROM friends f 
+    const queryFriendRequests = `SELECT u.username, u.first_name, u.last_name FROM friends f 
     JOIN users u ON u.username = f.user_username WHERE f.friend_username = $1 AND f.status = 'pending'`;
     const friends = await db.any(queryFriendRequests, [userUsername]);
 
@@ -131,7 +124,7 @@ router.post("/profile/social/requests/accept", async (req, res) => {
 });
 router.get('/profile/social/requests/sent', async (req, res) => {
   const db = req.app.get('db');
-  const query = `SELECT u.username FROM friends f 
+  const query = `SELECT u.username, u.first_name, u.last_name FROM friends f 
   JOIN users u ON u.username = f.friend_username WHERE f.user_username = $1 AND f.status = 'pending'`;
 
   const socialObj = {
@@ -159,7 +152,7 @@ router.post("/profile/social/requests/sent", async (req, res) => {
   const friendUsername = req.body.add_friend;
 
   const queryUserExists = `SELECT * FROM users WHERE username = $1`
-  const querySentFriends = `SELECT u.username FROM friends f 
+  const querySentFriends = `SELECT u.username, u.first_name, u.last_name FROM friends f 
   JOIN users u ON u.username = f.friend_username WHERE f.user_username = $1 AND f.status = 'pending'`;
 
   const socialObj = {
@@ -239,7 +232,7 @@ router.post("/profile/social/requests/sent/cancel", async (req, res) => {
     await db.none(query, [userUsername, friendUsername]);
     console.log(userUsername, friendUsername);
     // Update sent requests html
-    const querySentFriends = `SELECT u.username FROM friends f 
+    const querySentFriends = `SELECT u.username, u.first_name, u.last_name FROM friends f 
     JOIN users u ON u.username = f.friend_username WHERE f.user_username = $1 AND f.status = 'pending'`;
     
     const friends = await db.any(querySentFriends, [userUsername]);

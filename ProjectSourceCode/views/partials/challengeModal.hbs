@@ -1,0 +1,31 @@
+<style>
+    .custom-modal-dark {
+  background-color: #181818;
+  color: #fff;
+  border: 2px solid #000;
+}
+</style>
+
+<div class="modal fade" id="challengeModal-{{username}}"  aria-labelledby="challengeModalLabel-{{username}}">
+    <div class="modal-dialog">
+        <div class="modal-content custom-modal-dark">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="challengeModalLabel-{{username}}">New Challenge</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="data-form-{{username}}" method="POST" action="/profile/social/challenge">
+                    <input type="hidden" name="friend_username" value="{{username}}">
+                    <label for="friend_username">To: {{username}}</label>
+                    <br>
+                    <label for="word">Enter the 5-letter word:</label>
+                    <input type="text" name="word" id="word" minlength="5" maxlength="5" pattern="^[a-zA-Z]{5}$" required placeholder="buffs" />
+                    <br><br>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" type="submit">Send</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
