@@ -5,37 +5,29 @@
 
     <!-- Main content -->
     <div class="col-9">
+      {{!-- ACCOUNT TAB --}}
       {{#if active.account}}
         <h2 class="mb-3">@{{username}}</h2>
 
-        {{!-- Show the current info --}}
-        <div class="mb-2"><strong>Name:</strong> {{#if full_name}}{{full_name}}{{else}}Not set yet{{/if}}</div>
-        <div class="mb-2"> <strong>Email:</strong> {{#if email}}{{email}}{{else}}Not set yet{{/if}}</div>
-        
+        {{!-- Show the current info only --}}
+        <div class="mb-2">
+          <strong>Name:</strong>
+          {{#if full_name}}{{full_name}}{{else}}Not set yet{{/if}}
+        </div>
+
+        <div class="mb-2">
+          <strong>Email:</strong>
+          {{#if email}}{{email}}{{else}}Not set yet{{/if}}
+        </div>
+
         <hr class="my-3">
 
-        <h4>Update Account Info (optional)</h4>
-        <form method="POST" action="/profile/account">
-          <div class="mb-3">
-            <label class="form-label">First name (optional)</label>
-            <input type="text" name="first_name" class="form-control" value="{{first_name}}">
-          </div>
-
-          <div class="mb-3">
-            <label class="form-label">Last name (optional)</label>
-            <input type="text" name="last_name" class="form-control" value="{{last_name}}">
-          </div>
-
-          <div class="mb-3">
-            <label class="form-label">Email (optional)</label>
-            <input type="email" name="email" class="form-control" value="{{email}}">
-          </div>
-
-          <button type="submit" class="btn btn-primary">Update Info</button>
-          </form>
+        <a href="/profile/account/edit" class="btn btn-secondary">
+          Edit Account
+        </a>
       {{/if}}
 
-
+      {{!-- STATS TAB --}}
       {{#if active.stats}}
         <h2 class="mb-3">@{{username}}</h2>
         <h4>Daily Stats</h4>
@@ -54,10 +46,6 @@
 
       {{#if active.social}}
         <h3>Friends</h3>
-        <div class="input-group mb-3">
-          <input type="text" class="form-control" placeholder="Add Friend...">
-          <button class="btn btn-success">Add</button>
-        </div>
         <ul class="list-group">
           {{#each friends}}
             <li class="list-group-item d-flex justify-content-between">

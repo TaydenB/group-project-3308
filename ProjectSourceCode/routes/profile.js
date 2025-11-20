@@ -15,11 +15,11 @@ router.get('/profile', (req, res) => {
   return res.redirect('/profile/account');
 });
 
-
-// /profile/account
+// -----------------------------
+// Account DISPLAY page (no form)
+// -----------------------------
 router.get('/profile/account', async (req, res) => {
   const db = req.app.get('db');
-
   const user = req.session.user;
 
   try {
@@ -32,7 +32,7 @@ router.get('/profile/account', async (req, res) => {
     const last_name = row?.last_name || '';
     const email = row?.email || '';
 
-    const full_name = 
+    const full_name =
       (first_name || last_name)
         ? `${first_name} ${last_name}`.trim()
         : null;
@@ -45,14 +45,47 @@ router.get('/profile/account', async (req, res) => {
       full_name,
       email,
     });
-  } catch (err){
+  } catch (err) {
     console.error('Error loading profile:', err);
     res.status(500).send('Error loading profile');
   }
 });
 
+// -----------------------------
+// Account EDIT page (GET form)
+// -----------------------------
+router.get('/profile/account/edit', async (req, res) => {
+  const db = req.app.get('db');
+  const user = req.session.user;
 
-router.post('/profile/account', async (req, res) => {
+  try {
+    const row = await db.oneOrNone(
+      'SELECT first_name, last_name, email FROM users WHERE username = $1',
+      [user.username]
+    );
+
+    const first_name = row?.first_name || '';
+    const last_name = row?.last_name || '';
+    const email = row?.email || '';
+
+    res.render('pages/profileEdit.hbs', {
+      active: { account: true, edit: true },
+      username: user.username,
+      first_name,
+      last_name,
+      email,
+      // no message/error on initial load
+    });
+  } catch (err) {
+    console.error('Error loading profile edit page:', err);
+    res.status(500).send('Error loading edit page');
+  }
+});
+
+// -----------------------------
+// Account EDIT page (POST update)
+// -----------------------------
+router.post('/profile/account/edit', async (req, res) => {
   const db = req.app.get('db');
   const user = req.session.user;
   const { first_name, last_name, email } = req.body;
@@ -70,19 +103,45 @@ router.post('/profile/account', async (req, res) => {
     user.last_name = last_name || null;
     user.email = email || null;
     req.session.user = user;
-    
-    res.redirect('/profile/account');
+
+    // Re-query to get clean values (optional, but ensures consistency)
+    const row = await db.oneOrNone(
+      'SELECT first_name, last_name, email FROM users WHERE username = $1',
+      [user.username]
+    );
+
+    const updatedFirst = row?.first_name || '';
+    const updatedLast = row?.last_name || '';
+    const updatedEmail = row?.email || '';
+
+    res.render('pages/profileEdit.hbs', {
+      active: { account: true, edit: true },
+      username: user.username,
+      first_name: updatedFirst,
+      last_name: updatedLast,
+      email: updatedEmail,
+      message: 'Account information updated successfully!',
+      error: false,
+    });
   } catch (err) {
     console.error('Error updating profile:', err);
-    res.status(500).send('Error updating profile');
+
+    res.status(500).render('pages/profileEdit.hbs', {
+      active: { account: true, edit: true },
+      username: user.username,
+      first_name,
+      last_name,
+      email,
+      message: 'Error updating account information. Please try again.',
+      error: true,
+    });
   }
 });
 
-
-// /profile/stats — arbitrary for now
+// -----------------------------
+// /profile/stats 
+// -----------------------------
 router.get('/profile/stats', (req, res) => {
-  const db = req.app.get('db');
-
   const user = req.session.user;
 
   res.render('pages/profile.hbs', {
@@ -92,8 +151,10 @@ router.get('/profile/stats', (req, res) => {
       plays: 0,
       wins: 0,
       avgGuesses: 0,
-      avgTime: '--'
-    }
+      avgTime: '--',
+      challengePlays: 0,
+      challengeWins: 0,
+    },
   });
 });
 
