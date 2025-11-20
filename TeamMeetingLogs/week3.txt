@@ -1,0 +1,9 @@
+1. We decided to implement the main functionality for the wordle game and sending challenges to friends. We will also update the html and css for more of the pages.
+2. Decided to move sending challenges to the social page and remove the challenge tab
+3.
+Tayden: JS implementation for the daily/game page
+Oliver: Add clock to the game page
+Noah: Sending and accepting challenges between friends
+Jaden: Add separate tab for editing profile with optional name and email prompts, along with confirmation/error messages after submitting
+Brandon: Style some pages using CSS in dark mode format
+Joe: Add game functionality for guessing words.
