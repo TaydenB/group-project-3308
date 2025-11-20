@@ -1,14 +1,17 @@
 /*Select the Tiles*/
-import { WordSelector } from "./hash.js";
 const rows = document.querySelectorAll("#game-board .row");
 let selected_row = 0;
 let tile = 0;
 let answer = null;
+let friend_username = null;
 let max_tiles = 5;
 let guesses = 0;
+
 async function run() {
-    const selector = new WordSelector('/resources/words.txt');
-    answer = await selector.pickWord();
+    const wordDiv = document.getElementById('challenge-word');
+    answer = wordDiv.dataset.word.toLowerCase();
+    const friendDiv = document.getElementById('friend-username');
+    friend_username = friendDiv.dataset.friend;
 }
 run();
 /*Create the implementation for the keyboard*/
@@ -70,9 +73,25 @@ function deleteLetter() {
         current_tile.textContent = "";
     }
 }
+async function updateChallengeResult() {
+    try {
+        const response = await fetch('/profile/social/challenge/result', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                friendUsername: friend_username,
+                score: 100  // place holder
+            })
+        });
 
+        const data = await response.json();
+        console.log('Server response:', data);
+    } catch (err) {
+        console.error('Failed to update challenge:', err);
+    }
+}
 //submitWord function that enters the word
-function submitWord() {
+async function submitWord() {
     if (guesses >= 6) {
         showMessage("No more guesses!");
         return;
@@ -103,10 +122,12 @@ function submitWord() {
 
     if (word == answer) {
         showMessage("Correct!");
+        await updateChallengeResult();
         return;
     }
     if (guesses == 6) {
         showMessage(`Word is ${answer}`);
+        await updateChallengeResult();
         return;
     }
 

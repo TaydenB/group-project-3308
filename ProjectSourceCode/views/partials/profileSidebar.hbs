@@ -1,5 +1,28 @@
+<style>
+  .profile-sidebar .list-group-item {
+    background-color: #242424;
+    color: white;
+    border-color: #333;
+  }
+  .profile-sidebar .list-group-item.active {
+    background-color: #C6AA76;
+    border-color: white;
+    color: black;
+  }
+  .profile-sidebar .list-group-item:hover {
+    background-color: #C6AA76;
+    border-color: white;
+    color: black;
+  }
+  .profile-sidebar .list-group-item a {
+    color: #C6AA76;
+  }
+  .profile-sidebar .list-group-item.active a {
+    color: black;
+  }
+</style>
 <div class="col-3">
-      <ul class="list-group">
+      <ul class="list-group profile-sidebar">
         <li class="list-group-item {{#if active.account}}active{{/if}}">
           <a class="text-decoration-none text-reset" href="/profile/account">Account</a>
         </li>
