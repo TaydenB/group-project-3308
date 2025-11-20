@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+    
+{{> gameHead}}
+
+<body>
+    {{> gameLayout}}
+    <script src="/resources/sowpods-five.js"></script>
+    <div id="challenge-word" data-word="{{word}}" style="display:none;"></div>   {{!-- Hidden word --}}
+    <div id="friend-username" data-friend="{{friendUsername}}" style="display:none;"></div>
+    <script type="module" src="/resources/challengeGame.js"></script>
+</body>
+
+</html>

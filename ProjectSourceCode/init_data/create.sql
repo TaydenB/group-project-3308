@@ -15,6 +15,9 @@ CREATE TABLE IF NOT EXISTS scoreboard (
 CREATE TABLE IF NOT EXISTS friends(
     user_username VARCHAR(20) REFERENCES users(username) ON DELETE CASCADE,
     friend_username VARCHAR(20) REFERENCES users(username) ON DELETE CASCADE,
+    user_wins INT DEFAULT 0,
+    friend_wins INT DEFAULT 0,
+    ties INT DEFAULT 0,
     status VARCHAR(20) DEFAULT 'pending',
     PRIMARY KEY (user_username, friend_username)
 );

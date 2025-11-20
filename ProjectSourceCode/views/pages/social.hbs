@@ -28,6 +28,9 @@
                         <button type="submit" class="btn btn-success float-end">Play</button>
                     </form>
                 {{/if}}
+                {{#if waiting}}
+                     <span class="badge bg-secondary text-light">Waiting for Friend</span>
+                {{/if}}
             </div>
         </li>
     </ul>
