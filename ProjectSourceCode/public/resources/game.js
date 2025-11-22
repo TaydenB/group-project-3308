@@ -1,148 +1,199 @@
-/*Select the Tiles*/
-import { WordSelector } from "./hash.js";
-const rows = document.querySelectorAll("#game-board .row");
-let selected_row = 0;
-let tile = 0;
-let answer = null;
-let max_tiles = 5;
-let guesses = 0;
-async function run() {
-    const selector = new WordSelector('/resources/words.txt');
-    answer = await selector.pickWord();
-}
-run();
-/*Create the implementation for the keyboard*/
-//for all keyboard-key classes
-document.querySelectorAll(".keyboard-key").forEach(key => {
-    //if you click on any of the keyboard buttons
-    key.addEventListener("click", () => {
-        //store the contents of the button in letter
-        const letter = key.textContent.trim();
-        //call addLetter function
-        addLetter(letter);
-    });
-});
+document.addEventListener("DOMContentLoaded", () => {
 
-//for the delete key
-document.querySelector(".keyboard-key-delete").addEventListener("click", () => {
-    //call deleteLetter function
-    deleteLetter();
-});
+    /*Select the Tiles*/
+    import("./hash.js").then(({ WordSelector }) => {
 
-//for the enter key
-document.querySelector(".keyboard-key-enter").addEventListener("click", () => {
-    //call submit word function
-    submitWord();
-});
+        const rows = document.querySelectorAll("#game-board .row");
+        let selected_row = 0;
+        let tile = 0;
+        let answer = null;
+        let max_tiles = 5;
+        let guesses = 0;
 
-/*Create the functions to make the keys function*/
-//addLetter function that adds a letter into the tile
-function addLetter(letter) {
-    //if within the row
-    if (tile < max_tiles) {
-        //pick the correct tile
-        const current_tile = rows[selected_row].children[tile];
-        //put the letter in the tile
-        current_tile.textContent = letter;
-        //increment tile count
-        tile++;
-    }
-}
+        // ----- RESTORE SAVED PROGRESS FROM SERVER -----
+        const saved = window.dailyProgress;
+        window.inputLocked = false;
+        if (saved) {
+            answer = saved.answer;
+            guesses = saved.guesses.length;
 
-function showMessage(message) {
-    const msg = document.getElementById("message");
-    msg.textContent = message;
-    msg.classList.add("show");
-    setTimeout(() => {
-        msg.classList.remove("show");
-    }, 1500);
-}
+            // Restore letters & colors for each existing guess
+            saved.guesses.forEach((prevWord, r) => {
+                for (let c = 0; c < prevWord.length; c++) {
+                    rows[r].children[c].textContent = prevWord[c].toUpperCase();
+                }
+                colorRow(prevWord, rows[r]);
+            });
 
-//deleteLetter function that removes a letter from the tile
-function deleteLetter() {
-    //if there is a value to delete
-    if (tile > 0) {
-        //decrement the tile count
-        tile--;
-        //pick correct tile
-        const current_tile = rows[selected_row].children[tile];
-        //remove the letter from the tile
-        current_tile.textContent = "";
-    }
-}
+            // NEXT row should ALWAYS be guesses.length
+            selected_row = saved.guesses.length;
+            tile = 0;
 
-//submitWord function that enters the word
-function submitWord() {
-    if (guesses >= 6) {
-        showMessage("No more guesses!");
-        return;
-    }
-    //if not enough letters nothing happens
-    if (tile != max_tiles) {
-        showMessage("Not 5-letters!");
-        return
-    }
-    if (answer == null) {
-        run();
-        console.log(answer);
-    }
-
-    //word variable to store values in tiles
-    let word = "";
-    //loop through tiles and store in variable word
-    for (let i = 0; i < max_tiles; i++) {
-        word += rows[selected_row].children[i].textContent;
-    }
-    word = word.toLowerCase();
-    if (!sowpods.includes(word)) {
-        showMessage("Not a word!");
-        return;
-    }
-    guesses += 1;
-    colorRow(word, rows[selected_row]);
-
-    if (word == answer) {
-        showMessage("Correct!");
-        return;
-    }
-    if (guesses == 6) {
-        showMessage(`Word is ${answer}`);
-        return;
-    }
-
-    //change rows
-    if (selected_row < 5) {
-        //increment row
-        selected_row++;
-        //start on first tile again
-        tile = 0;
-    }
-}
-
-function colorRow(word, row) {
-    const result = Array(5).fill('absent');
-    const wordArr = word.split('');
-    const answerArr = answer.split('');
-    //greens
-    for (let i = 0; i < max_tiles; i++) {
-        if (wordArr[i] === answerArr[i]) {
-            result[i] = 'correct';
-            answerArr[i] = null;
-            wordArr[i] = null;
-        }
-    }
-    //yellows
-    for (let i = 0; i < max_tiles; i++) {
-        if (wordArr[i] !== null) {
-            let idx = answerArr.indexOf(wordArr[i]);
-            if (idx !== -1) {
-                result[i] = 'present';
-                answerArr[idx] = null;
+            // If already finished, lock input
+            if (saved.completed) {
+                window.inputLocked = true;
             }
         }
-    }
-    const tiles = row.querySelectorAll(".tile");
-    for (let i = 0; i < max_tiles; i++) {
-        tiles[i].classList.add(result[i]);
-    }
-}
+
+
+        // ----- GET TODAY’S WORD ONLY IF NO SAVED PROGRESS -----
+        async function run() {
+            if (saved && saved.answer) {
+                answer = saved.answer;
+                return;
+            }
+
+            const selector = new WordSelector('/resources/words.txt');
+            answer = await selector.pickWord();
+        }
+
+        run();
+
+
+        /* Keyboard setup */
+        document.querySelectorAll(".keyboard-key").forEach(key => {
+            key.addEventListener("click", () => {
+                const letter = key.textContent.trim();
+                addLetter(letter);
+            });
+        });
+
+        document.querySelector(".keyboard-key-delete").addEventListener("click", deleteLetter);
+        document.querySelector(".keyboard-key-enter").addEventListener("click", submitWord);
+
+
+        /* FUNCTIONS */
+
+        function addLetter(letter) {
+            if (window.inputLocked) return;
+            if (tile < max_tiles) {
+                const current_tile = rows[selected_row].children[tile];
+                current_tile.textContent = letter;
+                tile++;
+            }
+        }
+
+        function showMessage(message) {
+            const msg = document.getElementById("message");
+            msg.textContent = message;
+            msg.classList.add("show");
+            setTimeout(() => msg.classList.remove("show"), 1500);
+        }
+
+        function deleteLetter() {
+            if (window.inputLocked) return;
+            if (tile > 0) {
+                tile--;
+                rows[selected_row].children[tile].textContent = "";
+            }
+        }
+
+        // ----- SEND FINAL RESULT TO SERVER -----
+        async function sendDailyResult(guesses, didWin) {
+            try {
+                await fetch('/daily/result', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ guesses, didWin })
+                });
+            } catch (err) {
+                console.error("Failed to send daily result:", err);
+            }
+        }
+
+
+        async function submitWord() {
+            if (window.inputLocked) return;
+
+            if (guesses >= 6) {
+                showMessage("No more guesses!");
+                return;
+            }
+
+            if (tile != max_tiles) {
+                showMessage("Not 5-letters!");
+                return;
+            }
+
+            let word = "";
+            for (let i = 0; i < max_tiles; i++) {
+                word += rows[selected_row].children[i].textContent;
+            }
+            word = word.toLowerCase();
+
+            if (!sowpods.includes(word)) {
+                showMessage("Not a word!");
+                return;
+            }
+
+            guesses++;
+
+            colorRow(word, rows[selected_row]);
+
+            // ----- ALWAYS SAVE PROGRESS -----
+            await fetch('/daily/save', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    guess: word,
+                    row: selected_row,
+                    completed: false
+                })
+            });
+
+            // ----- WIN -----
+            if (word === answer) {
+                showMessage("Correct!");
+                window.inputLocked = true;
+
+                await sendDailyResult(guesses, true);   // <-- REQUIRED
+
+                return;
+            }
+
+            // ----- LOSS -----
+            if (guesses === 6) {
+                showMessage(`Word is ${answer}`);
+                window.inputLocked = true;
+
+                await sendDailyResult(guesses, false);  // <-- REQUIRED
+
+                return;
+            }
+
+            selected_row++;
+            tile = 0;
+        }
+
+
+        function colorRow(word, row) {
+            const result = Array(5).fill('absent');
+            const wordArr = word.split('');
+            const answerArr = answer.split('');
+
+            for (let i = 0; i < max_tiles; i++) {
+                if (wordArr[i] === answerArr[i]) {
+                    result[i] = 'correct';
+                    answerArr[i] = null;
+                    wordArr[i] = null;
+                }
+            }
+
+            for (let i = 0; i < max_tiles; i++) {
+                if (wordArr[i] !== null) {
+                    const idx = answerArr.indexOf(wordArr[i]);
+                    if (idx !== -1) {
+                        result[i] = 'present';
+                        answerArr[idx] = null;
+                    }
+                }
+            }
+
+            const tiles = row.querySelectorAll(".tile");
+            for (let i = 0; i < max_tiles; i++) {
+                tiles[i].classList.add(result[i]);
+            }
+        }
+
+    });
+});

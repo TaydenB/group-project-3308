@@ -25,6 +25,10 @@ const hbs = handlebars.create({
   defaultLayout: 'main',
 });
 
+hbs.handlebars.registerHelper("json", function(context) {
+  return JSON.stringify(context);
+});
+
 // database configuration
 const dbConfig = {
   host: process.env.POSTGRES_HOST, // the database server
@@ -91,6 +95,8 @@ app.use('/', require('./routes/challenge'));
 app.use('/', require('./routes/home'));
 app.use('/', require('./routes/social'));
 app.use('/', require('./routes/scoreboard'));
+app.use('/', require('./routes/daily'));
+
 
 // *****************************************************
 // <!-- Section 5 : Start Server-->

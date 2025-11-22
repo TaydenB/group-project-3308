@@ -3,8 +3,19 @@ CREATE TABLE IF NOT EXISTS users (
     password VARCHAR(100) NOT NULL,
     first_name VARCHAR(50),
     last_name VARCHAR(50),
-    email VARCHAR(100)
+    email VARCHAR(100),
+
+    -- Daily game stats
+    daily_plays INT DEFAULT 0,
+    daily_wins INT DEFAULT 0,
+    daily_total_guesses INT DEFAULT 0,
+    daily_total_time INT DEFAULT 0,
+
+    -- Challenge stats
+    challenge_plays INT DEFAULT 0,
+    challenge_wins INT DEFAULT 0
 );
+
 
 CREATE TABLE IF NOT EXISTS scoreboard (
     id SERIAL PRIMARY KEY,
@@ -41,3 +52,17 @@ CREATE TABLE IF NOT EXISTS challenge(
     -- waiting_user(waiting for user to finish)
 
 );
+
+CREATE TABLE IF NOT EXISTS daily_progress (
+    username VARCHAR(20) PRIMARY KEY REFERENCES users(username) ON DELETE CASCADE,
+    answer VARCHAR(5) NOT NULL,
+    guesses JSONB DEFAULT '[]',
+    row INT DEFAULT 0,
+    completed BOOLEAN DEFAULT false
+);
+
+CREATE TABLE IF NOT EXISTS daily_word_cache (
+    day VARCHAR(10) PRIMARY KEY,
+    word VARCHAR(5) NOT NULL
+);
+

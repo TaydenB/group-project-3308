@@ -141,22 +141,41 @@ router.post('/profile/account/edit', async (req, res) => {
 // -----------------------------
 // /profile/stats 
 // -----------------------------
-router.get('/profile/stats', (req, res) => {
+router.get('/profile/stats', async (req, res) => {
+  const db = req.app.get('db');
   const user = req.session.user;
 
-  res.render('pages/profile.hbs', {
+  if (!user) return res.redirect('/login');
+
+  const query = `
+    SELECT daily_plays, daily_wins, daily_total_guesses,
+           challenge_plays, challenge_wins
+    FROM users
+    WHERE username = $1
+  `;
+
+  const data = await db.one(query, [user.username]);
+
+  const avg_guesses =
+    data.daily_plays > 0
+      ? (data.daily_total_guesses / data.daily_plays).toFixed(2)
+      : 0;
+
+  return res.render('pages/profile.hbs', {
     active: { stats: true },
     username: user.username,
     stats: {
-      plays: 0,
-      wins: 0,
-      avgGuesses: 0,
-      avgTime: '--',
-      challengePlays: 0,
-      challengeWins: 0,
-    },
+      plays: data.daily_plays,
+      wins: data.daily_wins,
+      avgGuesses: avg_guesses,
+      avgTime: "--",
+      challengePlays: data.challenge_plays,
+      challengeWins: data.challenge_wins
+    }
   });
 });
+
+
 
 async function getAllFriends(db, username) {
     const recievedFriendsQuery = `SELECT u.username, u.first_name, u.last_name FROM friends f 
