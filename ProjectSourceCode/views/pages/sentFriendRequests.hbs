@@ -1,9 +1,38 @@
+<style>
+  /* Default gold button */
+  .add-btn {
+    background-color: #C6AA76;
+    border: 1px solid white;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 8px;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+  }
+
+  /* Hover: grey + transparent border */
+  .add-btn:hover {
+    background-color: grey !important;
+    border-color: transparent !important;
+    color: white !important;
+  }
+
+  /* Active press: return to gold + white border */
+  .add-btn:active {
+    background-color: #C6AA76 !important;
+    border-color: white !important;
+    color: white !important;
+  }
+</style>
+
+
 {{#> socialWrapper}}
 <form method="POST" action="/profile/social/requests/sent" class="mb-4">
     <label for="add_friend" class="form-label">Add Friend</label>
     <div class="input-group">
         <input type="text" name="add_friend" id="add_friend" class="form-control" placeholder="Enter username" />
-        <button type="submit" class="btn" style="background-color:#C6AA76; border-color:#C6AA76; color:black;">Add</button>
+        <button type="submit" class="add-btn">Add</button>
+
+
 
     </div>
 </form>

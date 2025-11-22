@@ -1,39 +1,88 @@
 <style>
+  /* Match site dark theme */
   .navbar {
     background-color: #242424;
+    border: none;
+    padding-left: 0;
   }
-  .navbar .nav-link {
-    color: #C6AA76;
+
+  /* Base tab styling */
+  .social-tab {
+    display: inline-block;
+    padding: 8px 16px;
+    margin-right: 6px;
+    border: 1px solid transparent; /* inactive = no border */
+    border-radius: 8px;
+    color: white !important;
+    background-color: transparent;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+    text-decoration: none;
   }
-  .navbar .nav-link.active {
-    color: black;
-    background-color: #C6AA76;
+
+  /* Hover for inactive tabs */
+  .social-tab:hover {
+    background-color: grey !important;
+    border-color: transparent !important;
+    color: white !important;
+  }
+
+  /* Active tab (gold + white border) */
+  .social-tab.active {
+    background-color: #C6AA76 !important;
+    border: 1px solid white !important;
+    color: white !important;
+  }
+
+  /* Active tab HOVER — behaves exactly like inactive hover */
+  .social-tab.active:hover {
+    background-color: grey !important;
+    border-color: transparent !important;
+    color: white !important;
+  }
+
+  /* Remove Bootstrap weird spacing */
+  .navbar-nav {
+    margin-left: 0 !important;
+  }
+
+  .navbar-nav .nav-item {
+    margin: 0;
+    padding: 0;
   }
 </style>
+
+
 <nav class="navbar navbar-expand-sm">
-    <div class="container-fluid">
+  <div class="container-fluid">
 
-      <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-collapse"
-        aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
+    <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-collapse"
+      aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
 
-      <div class="collapse navbar-collapse" id="navbar-collapse">
-        <ul class="navbar-nav me-auto">
+    <div class="collapse navbar-collapse" id="navbar-collapse">
+      <ul class="navbar-nav me-auto">
 
-          <li class="nav-item">
-            <a class="nav-link {{#if activeSocial.friends}}active{{/if}}" href="/profile/social" style="padding-left: 0px">Friends</a>
-          </li>
+        <li class="nav-item">
+          <a class="social-tab {{#if activeSocial.friends}}active{{/if}}" href="/profile/social">
+            Friends
+          </a>
+        </li>
 
-          <li class="nav-item">
-            <a class="nav-link {{#if activeSocial.requests}}active{{/if}}" href="/profile/social/requests">Friend Requests</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link {{#if activeSocial.sent}}active{{/if}}" href="/profile/social/requests/sent">Sent Requests</a>
-          </li>
+        <li class="nav-item">
+          <a class="social-tab {{#if activeSocial.requests}}active{{/if}}" href="/profile/social/requests">
+            Friend Requests
+          </a>
+        </li>
 
-        </ul>
+        <li class="nav-item">
+          <a class="social-tab {{#if activeSocial.sent}}active{{/if}}" href="/profile/social/requests/sent">
+            Sent Requests
+          </a>
+        </li>
 
-      </div>
+      </ul>
     </div>
-  </nav>
+
+  </div>
+</nav>
