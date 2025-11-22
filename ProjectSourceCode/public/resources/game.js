@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-
+    console.log("GAME JS LOADED");
     /*Select the Tiles*/
     import("./hash.js").then(({ WordSelector }) => {
 
