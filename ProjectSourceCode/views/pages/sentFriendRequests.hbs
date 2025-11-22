@@ -1,58 +1,55 @@
+{{!-- sentFriendRequests.hbs --}}
 <style>
-  /* Default gold button */
-  .add-btn {
-    background-color: #C6AA76;
-    border: 1px solid white;
-    color: white;
-    padding: 8px 16px;
-    border-radius: 8px;
-    transition: background-color 0.2s ease, border-color 0.2s ease;
-  }
+    ul.list-group .list-group-item:hover {
+  background-color: #242424 !important;
+  border-color: #C6AA76 !important;  /* gold border */
+  box-shadow: none !important;
+}
 
-  /* Hover: grey + transparent border */
-  .add-btn:hover {
-    background-color: grey !important;
-    border-color: transparent !important;
+  .friend-name {
     color: white !important;
   }
 
-  /* Active press: return to gold + white border */
-  .add-btn:active {
-    background-color: #C6AA76 !important;
-    border-color: white !important;
+  .friend-link {
+    color: #C6AA76 !important;
+    text-decoration: none;
+  }
+
+  .friend-link:hover {
     color: white !important;
+    text-decoration: underline;
   }
 </style>
 
-
 {{#> socialWrapper}}
 <form method="POST" action="/profile/social/requests/sent" class="mb-4">
-    <label for="add_friend" class="form-label">Add Friend</label>
-    <div class="input-group">
-        <input type="text" name="add_friend" id="add_friend" class="form-control" placeholder="Enter username" />
-        <button type="submit" class="add-btn">Add</button>
+  <label for="add_friend" class="form-label">Add Friend</label>
 
-
-
-    </div>
+  <div class="input-group">
+    <input type="text" name="add_friend" id="add_friend" class="form-control" placeholder="Enter username" />
+    <button type="submit" class="gold-btn">Add</button>
+  </div>
 </form>
-<ul class="list-group">
-    <p>Pending</p>
-    {{#each friends}}
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-            <div>
-                <strong style="color: black;">{{first_name}} {{last_name}}</strong>
-                <br>
-                <a href="/profile/display/{{username}}" class="mb-0 link-dark link-offset-1 link-underline-opacity-25 link-underline-opacity-100-hover">@{{username}}</a>
-            </div>
-            <form method="POST" action="/profile/social/requests/sent/cancel">
-                <input type="hidden" name="friend_username" value="{{username}}">
-                <button type="submit" class="btn btn-danger float-end">Cancel</button>
-            </form>
-        </li>
-    {{/each}}
-</ul>
-{{/socialWrapper}}
 
+<ul class="list-group">
+  <p>Pending</p>
+
+  {{#each friends}}
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      <div>
+        <strong class="friend-name">{{first_name}} {{last_name}}</strong>
+        <br>
+        <a href="/profile/display/{{username}}" class="friend-link">@{{username}}</a>
+      </div>
+
+      <form method="POST" action="/profile/social/requests/sent/cancel">
+        <input type="hidden" name="friend_username" value="{{username}}">
+        <button type="submit" class="gold-btn">Cancel</button>
+      </form>
+    </li>
+  {{/each}}
+</ul>
+
+{{/socialWrapper}}
 
 {{> message}}

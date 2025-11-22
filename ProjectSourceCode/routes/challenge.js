@@ -286,6 +286,21 @@ router.post('/profile/social/challenge/result', async (req, res) => {
             (user_username = $2 AND friend_username = $3) OR (friend_username = $2 AND user_username = $3);`;
             await db.none(updateRecordQuery, [friend?.ties+1 || 1, userUsername, friendUsername]);
           }
+          
+          await db.none(`
+              UPDATE users
+              SET challenge_plays = challenge_plays + 1,
+                  challenge_wins = challenge_wins + CASE WHEN $1 THEN 1 ELSE 0 END
+              WHERE username = $2
+          `, [userScore < friendScore, userUsername]);
+
+          await db.none(`
+              UPDATE users
+              SET challenge_plays = challenge_plays + 1,
+                  challenge_wins = challenge_wins + CASE WHEN $1 THEN 1 ELSE 0 END
+              WHERE username = $2
+          `, [friendScore < userScore, friendUsername]);
+
 
           // Delete challenge
           await db.none(`DELETE FROM challenge WHERE id = $1;`,[challenge.id]);
