@@ -36,6 +36,7 @@ router.get('/daily', async (req, res) => {
    POST /daily/save → save each guess
 ----------------------------------------- */
 router.post('/daily/save', async (req, res) => {
+    console.log("saving");
     const db = req.app.get('db');
     const user = req.session.user;
     if (!user) return res.status(401).send();
