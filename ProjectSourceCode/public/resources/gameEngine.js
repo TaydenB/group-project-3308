@@ -12,7 +12,6 @@ export function createWordGame(config) {
         if (config.restore) {
             const restored = await config.restore(rows);
             if (restored) {
-                answer = restored.answer || answer;
                 let guesses = restored.guesses || guesses;
                 selected_row = guesses.length;
                 num_guesses = guesses.length;
@@ -76,7 +75,7 @@ export function createWordGame(config) {
     }
 
     async function submitWord() {
-        console.log(window.inputLocked, num_guesses, tile, max_tiles);
+        console.log(rows);
         if (window.inputLocked) return;
         if (num_guesses >= 6) return showMessage("No more guesses!");
         if (tile !== max_tiles) return showMessage("Not 5-letters!");
@@ -92,7 +91,7 @@ export function createWordGame(config) {
 
         // Mode chooses how to save
         await config.saveProgress(word, selected_row, (word === answer || num_guesses === 6));
-        console.log(word === answer, num_guesses);
+
         if (word === answer) {
             showMessage("Correct!");
             window.inputLocked = true;
@@ -132,6 +131,21 @@ export function createWordGame(config) {
         }
         row.querySelectorAll(".tile").forEach((tile, i) => {
             tile.classList.add(result[i]);
+        });
+
+        // Color keyboard
+        word.split('').forEach((letter, i) => {
+            const key = document.querySelector(`.keyboard-key[data-key="${letter.toUpperCase()}"]`);
+            if (!key) return;
+
+            // Prevent downgrading keys
+            if (result[i] === "correct" ||
+                (result[i] === "present" && !key.classList.contains("correct")) ||
+                (result[i] === "absent" && !key.classList.contains("correct") && !key.classList.contains("present"))) {
+
+                key.classList.remove("correct", "present", "absent");
+                key.classList.add(result[i]);
+            }
         });
     }
 }

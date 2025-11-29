@@ -70,3 +70,8 @@
     /* gray */
     color: white;
 }
+
+.untested {
+    background-color: #eee;
+    color: black;
+}

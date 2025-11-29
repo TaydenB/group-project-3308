@@ -183,14 +183,25 @@ router.get('/profile/social/challenge/play', async (req, res) => {
         socialObj.message = "Challenge has already been played";
         return res.status(400).render('pages/social.hbs', socialObj);
       }
-      return res.status(200).render('pages/challengeGame.hbs', { word: challenge.friend_word, friendUsername: friendUsername});
+      const progress = {
+            guesses: challenge.user_progress,
+            row: challenge.user_progress.length,
+            completed: (challenge.status === "wating_friend")
+        }
+      return res.status(200).render('pages/challengeGame.hbs', { word: challenge.friend_word, friendUsername: friendUsername, challengeProgress: progress});
     }else{
       // If user already has a score don't let them play again
       if(challenge.friend_score){
         socialObj.message = "Challenge has already been played";
         return res.status(400).render('pages/social.hbs', socialObj);
       }
-      return res.status(200).render('pages/challengeGame.hbs', { word: challenge.user_word, friendUsername: friendUsername});
+
+      const progress = {
+            guesses: challenge.friend_progress,
+            row: challenge.friend_progress.length,
+            completed: (challenge.status === "waiting_user")
+        }
+      return res.status(200).render('pages/challengeGame.hbs', { word: challenge.user_word, friendUsername: friendUsername, challengeProgress: progress});
     }
   } catch (err) {
     const friends = await getAllFriends(db, req.session.user.username);
@@ -310,6 +321,31 @@ router.post('/profile/social/challenge/result', async (req, res) => {
         console.error(err);
         res.status(500).json({ error: 'Database update failed' });
     }
+});
+
+router.post('/profile/social/challenge/save', async (req, res) => {
+    console.log("saving");
+    const db = req.app.get('db');
+    const user = req.session.user;
+    const userUsername = req.session.user.username;
+    const friendUsername = req.body.friendUsername; 
+
+    const challenge = await getChallengeFromUsers(db, userUsername, friendUsername);
+    if (!challenge) return res.status(401).send();
+
+    const progressColumn = challenge.user_username === userUsername ? "user_progress" : "friend_progress";
+
+    const { guess, row, completed } = req.body;
+    
+    const query = `
+        UPDATE challenge
+        SET ${progressColumn} = 
+            COALESCE(${progressColumn}, '[]'::jsonb) || to_jsonb($1::text)
+        WHERE id = $2
+    `;
+
+    await db.none(query, [guess, challenge.id]);
+    res.status(200).send();
 });
 
 module.exports = router;
