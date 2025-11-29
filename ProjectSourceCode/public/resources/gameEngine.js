@@ -97,7 +97,7 @@ export function createWordGame(config) {
             window.inputLocked = true;
             return config.finish(true, num_guesses);
         }
-
+        console.log(num_guesses);
         if (num_guesses === 6) {
             showMessage(`Word is ${answer}`);
             window.inputLocked = true;

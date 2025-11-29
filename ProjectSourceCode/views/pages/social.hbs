@@ -20,6 +20,18 @@
     color: white !important;
     text-decoration: underline;
   }
+  .score-actions-container {
+  min-width: 280px; /* adjust depending on how many buttons you have */
+  text-align: right;
+}
+
+/* Optional make score look clean */
+.friend-score {
+  color: #C6AA76;
+  width: 70px;           /* uniform width = perfect alignment */
+  text-align: right;
+  display: inline-block;
+}
 </style>
 
 {{#> socialWrapper}}
@@ -27,41 +39,52 @@
 
 {{#each friends}}
   <ul class="list-group">
-    <li class="list-group-item d-flex justify-content-between align-items-center">
-      <div>
-        <strong class="friend-name">{{first_name}} {{last_name}}</strong>
-        <br>
+    <li class="list-group-item d-flex align-items-center">
+  
+    <!-- LEFT: name + username -->
+    <div class="flex-grow-1">
+        <strong class="friend-name">{{first_name}} {{last_name}}</strong><br>
         <a href="/profile/display/{{username}}" class="friend-link">@{{username}}</a>
-      </div>
+    </div>
 
-      <div class="d-flex gap-2">
+    <!-- RIGHT: score + buttons (right-aligned, uniform) -->
+    <div class="d-flex align-items-center justify-content-end score-actions-container">
+        
+        <!-- Score (always same spot) -->
+        <strong class="friend-score me-3">{{user_wins}}-{{friend_wins}}-{{ties}}</strong>
+
+        <!-- Buttons -->
+        <div class="d-flex gap-2">
         {{#if none}}
-          <button type="button" class="gold-btn" data-bs-toggle="modal" data-bs-target="#challengeModal-{{username}}">Challenge</button>
+            <button type="button" class="gold-btn" data-bs-toggle="modal" data-bs-target="#challengeModal-{{username}}">Challenge</button>
         {{/if}}
 
         {{#if pending}}
-          <form method="POST" action="/profile/social/challenge/cancel">
+            <form method="POST" action="/profile/social/challenge/cancel">
             <input type="hidden" name="friend_username" value="{{username}}">
             <button type="submit" class="gold-btn">Cancel</button>
-          </form>
+            </form>
         {{/if}}
 
         {{#if accept}}
-          <button type="button" class="gold-btn" data-bs-toggle="modal" data-bs-target="#acceptModal-{{username}}">Accept</button>
+            <button type="button" class="gold-btn" data-bs-toggle="modal" data-bs-target="#acceptModal-{{username}}">Accept</button>
         {{/if}}
 
         {{#if play}}
-          <form method="POST" action="/profile/social/challenge/play">
+            <form method="POST" action="/profile/social/challenge/play">
             <input type="hidden" name="friend_username" value="{{username}}">
             <button type="submit" class="gold-btn">Play</button>
-          </form>
+            </form>
         {{/if}}
 
         {{#if waiting}}
-          <span class="badge bg-secondary text-light">Waiting for Friend</span>
+            <span class="badge bg-secondary text-light">Waiting</span>
         {{/if}}
-      </div>
+        </div>
+
+    </div>
     </li>
+
   </ul>
 
   {{> challengeModal}}

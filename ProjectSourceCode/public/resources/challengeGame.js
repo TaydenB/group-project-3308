@@ -30,7 +30,7 @@ createWordGame({
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 friendUsername: document.getElementById('friend-username').dataset.friend,
-                score: win ? 100 : 0
+                score: win ? 100 : 10
             })
         });
     }

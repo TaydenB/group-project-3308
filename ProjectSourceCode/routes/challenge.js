@@ -282,7 +282,7 @@ router.post('/profile/social/challenge/result', async (req, res) => {
             userScore = friendScore;
             friendScore = temp;
           }
-          console.log("ties",friend.user_username, friend.last_name);
+          console.log(userScore, friendScore);
           // Update record between players
           if(userScore > friendScore){
             const updateRecordQuery = `UPDATE friends SET user_wins = $1 WHERE 
