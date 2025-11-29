@@ -84,11 +84,13 @@ function deleteLetter() {
 function submitWord() {
     if (guesses >= 6) {
         showMessage("No more guesses!");
+        calculateScore();
         return;
     }
     //if not enough letters nothing happens
     if (tile != max_tiles) {
         showMessage("Not 5-letters!");
+        calculateScore();
         return
     }
     if (answer == null) {
@@ -112,10 +114,12 @@ function submitWord() {
 
     if (word == answer) {
         showMessage("Correct!");
+        calculateScore();
         return;
     }
     if (guesses == 6) {
         showMessage(`Word is ${answer}`);
+        calculateScore();
         return;
     }
 
@@ -156,6 +160,8 @@ function colorRow(word, row) {
     }
 }
 
+
+/*Time functions to calculate elapsed time  */
 function getElapsedMs() {
     return Date.now() - startTime; 
 }
@@ -185,4 +191,32 @@ function updateTimer() {
     if (timerElem) {
         timerElem.textContent = `${minutes}:${seconds.toString().padStart(2, "0")}`;
     }
+}
+
+
+/*All scoring functions*/
+function calculateScore(guessesUsed, elapsedMs) {
+    const base = START_SCORE; //starting score
+    const guessesOverFirst = Math.max(0, guessesUsed - 1); //guess penalty amount of guesses
+    const guessPenalty = guessesOverFirst * 100; //total guess penalty
+    const elapsedSeconds = Math.floor(elapsedMs / 1000); //elapsed time
+    const timePenalty = elapsedSeconds * 2; //penalty for time
+    let finalScore = base - guessPenalty - timePenalty; //final score
+    if (finalScore < 0) {
+        finalScore = 0;
+    }
+    return finalScore;
+}
+
+function sendScoreToServer(score) {
+    // This posts the score to the server.
+    fetch('/scoreboard', {
+        method: 'POST',
+        headers: { 
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ score })
+    }).catch(err => {
+        console.error('Failed to send score:', err);
+    });
 }

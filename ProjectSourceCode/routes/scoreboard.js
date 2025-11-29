@@ -9,8 +9,6 @@ router.get('/scoreboard', async (req, res, next) => {
             `
             SELECT s.username, s.score
             FROM scoreboard AS s 
-                COALESCE(u.first_name, s.first_name) AS first_name,
-                COALESCE(u.last_name,  s.last_name)  AS last_name
             LEFT JOIN users u ON u.username = s.username
             ORDER BY s.score DESC, s.username ASC
             LIMIT 100
@@ -21,6 +19,37 @@ router.get('/scoreboard', async (req, res, next) => {
     } catch (err) {
         next(err)
     };
+});
+
+router.post('/scoreboard', async (req, res, next) => {
+    try {
+        const db = req.app.get('db');
+        const username = req.session.user?.username; // adjust this based on how you store the logged-in user
+        const { score } = req.body;
+
+        if (!username) {
+            return res.status(401).json({ error: 'Not logged in' });
+        }
+
+        if (typeof score !== 'number') {
+            return res.status(400).json({ error: 'Invalid score' });
+        }
+
+        // keeps the best score of the userf
+        await db.none(
+            `
+            INSERT INTO scoreboard (username, score)
+            VALUES ($1, $2)
+            ON CONFLICT (username) DO UPDATE
+            SET score = GREATEST(scoreboard.score, EXCLUDED.score)
+            `,
+            [username, score]
+        );
+
+        res.status(200).json({ success: true });
+    } catch (err) {
+        next(err);
+    }
 });
 
 module.exports = router;
