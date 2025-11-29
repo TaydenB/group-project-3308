@@ -14,7 +14,7 @@ router.use(auth);
 router.get('/daily', async (req, res) => {
     const db = req.app.get('db');
     const username = req.session.user.username;
-
+    
     const progress = await db.oneOrNone(
         `SELECT answer, guesses, row, completed 
          FROM daily_progress 
