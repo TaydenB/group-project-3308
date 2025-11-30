@@ -196,6 +196,8 @@ router.get('/profile/display/:username', async (req, res) => {
   
   try {
     const user = await db.oneOrNone(`SELECT username, first_name, last_name, email FROM users WHERE username = $1`, [username]);
+
+    // get friends
     if(user){
       const full_name = 
       (user.first_name || user.last_name)
@@ -204,11 +206,34 @@ router.get('/profile/display/:username', async (req, res) => {
 
       const friends = await getAllFriends(db, username);
 
+        // Get stats
+        const statsQuery = `
+        SELECT daily_plays, daily_wins, daily_total_guesses,
+              challenge_plays, challenge_wins
+        FROM users
+        WHERE username = $1
+      `;
+
+      const data = await db.one(statsQuery, [username]);
+
+      const avg_guesses =
+        data.daily_plays > 0
+          ? (data.daily_total_guesses / data.daily_plays).toFixed(2)
+          : 0;
+
       return res.status(200).render('pages/otherProfile', {
         username: user.username,
         full_name: full_name,
         email: user.email,
-        friends: friends
+        friends: friends,
+        stats: {
+          plays: data.daily_plays,
+          wins: data.daily_wins,
+          avgGuesses: avg_guesses,
+          avgTime: "--",
+          challengePlays: data.challenge_plays,
+          challengeWins: data.challenge_wins
+        }
       });
     }
     return res.status(400).render('pages/noOtherProfile', { message: "User: '" + username + "' does not exist", error: true });

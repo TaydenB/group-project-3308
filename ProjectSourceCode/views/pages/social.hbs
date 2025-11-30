@@ -23,6 +23,7 @@
   .score-actions-container {
   min-width: 280px; /* adjust depending on how many buttons you have */
   text-align: right;
+  
 }
 
 /* Optional make score look clean */
@@ -32,10 +33,31 @@
   text-align: right;
   display: inline-block;
 }
+
+.gold-btn {
+  width: 110px;         /* pick a size that fits your longest text */
+  height: 36px;         /* optional */
+  padding: 6px 0 !important;
+  text-align: center;
+  white-space: nowrap;  /* prevents wrapping */
+}
 </style>
 
 {{#> socialWrapper}}
-<p>Friends</p>
+<p>Friends</p> 
+<div class="list-group">
+  
+  <!-- Header Row -->
+  <li class="list-group-item d-flex align-items-center header-row">
+    <div class="flex-grow-1">
+      <strong class="friend-name">Name</strong>
+    </div>
+
+    <!-- Right column header (aligned with score column) -->
+    <div class="score-actions-container d-flex justify-content-end">
+      <strong class="friend-score me-3">W-L-T</strong>
+    </div>
+  </li>
 
 {{#each friends}}
   <ul class="list-group">
@@ -49,9 +71,6 @@
 
     <!-- RIGHT: score + buttons (right-aligned, uniform) -->
     <div class="d-flex align-items-center justify-content-end score-actions-container">
-        
-        <!-- Score (always same spot) -->
-        <strong class="friend-score me-3">{{user_wins}}-{{friend_wins}}-{{ties}}</strong>
 
         <!-- Buttons -->
         <div class="d-flex gap-2">
@@ -80,6 +99,9 @@
         {{#if waiting}}
             <span class="badge bg-secondary text-light">Waiting</span>
         {{/if}}
+
+        <!-- Score (always same spot) -->
+        <strong class="friend-score me-3">{{user_wins}}-{{friend_wins}}-{{ties}}</strong>
         </div>
 
     </div>
