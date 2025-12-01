@@ -1,39 +1,61 @@
 <style>
-  .profile-sidebar .list-group-item {
-    background-color: #242424;
-    color: white;
-    border-color: #333;
-  }
-  .profile-sidebar .list-group-item.active {
-    background-color: #C6AA76;
-    border-color: white;
-    color: black;
-  }
-  .profile-sidebar .list-group-item:hover {
-    background-color: #C6AA76;
-    border-color: white;
-    color: black;
-  }
-  .profile-sidebar .list-group-item a {
-    color: #C6AA76;
-  }
-  .profile-sidebar .list-group-item.active a {
-    color: black;
-  }
+
+/* Base state */
+.list-group-item {
+  background-color: #181818 !important;
+  color: white !important;
+  border: 1px solid #333;
+  transition: background-color 0.18s ease, color 0.18s ease;
+}
+
+/* Hover for ALL items (even gold ones) */
+.list-group-item.list-group-item-action:hover,
+.list-group-item:hover {
+  background-color: grey !important; 
+  border-color: transparent !important;
+  color: white !important;
+}
+
+/* Active (gold) */
+.list-group-item.active {
+  background-color: #C6AA76 !important;
+  border-color: white!important;
+  color: white !important;
+  font-weight: normal !important;
+  transition: background-color 0.18s ease, color 0.18s ease;
+}
+
+/* Kill Bootstrap focus flickers */
+.list-group-item-action:focus,
+.list-group-item-action:active,
+.list-group-item-action:focus-visible {
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+
 </style>
+
 <div class="col-3">
-      <ul class="list-group profile-sidebar">
-        <li class="list-group-item {{#if active.account}}active{{/if}}">
-          <a class="text-decoration-none text-reset" href="/profile/account">Account</a>
-        </li>
-        <li class="list-group-item {{#if active.stats}}active{{/if}}">
-          <a class="text-decoration-none text-reset" href="/profile/stats">Stats</a>
-        </li>
-        <li class="list-group-item {{#if active.social}}active{{/if}}">
-          <a class="text-decoration-none text-reset" href="/profile/social">Social</a>
-        </li>
-        <li class="list-group-item">
-          <a class="text-decoration-none text-reset" href="/logout">Logout</a>
-        </li>
-      </ul>
+  <div class="list-group">
+
+    <a href="/profile/account"
+       class="list-group-item list-group-item-action 
+              {{#if active.account}}active{{/if}}">
+      Account
+    </a>
+
+    <a href="/profile/stats"
+       class="list-group-item list-group-item-action 
+              {{#if active.stats}}active{{/if}}">
+      Stats
+    </a>
+
+    <a href="/profile/social"
+       class="list-group-item list-group-item-action 
+              {{#if active.social}}active{{/if}}">
+      Social
+    </a>
+
+  </div>
 </div>

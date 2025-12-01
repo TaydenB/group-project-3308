@@ -6,13 +6,20 @@ export async function getChallengeFromUsers(db, userUsername, friendUsername) {
     return challenge;
 }
 export async function getAllFriends(db, username) {
-    const recievedFriendsQuery = `SELECT u.username, u.first_name, u.last_name FROM friends f 
+    const recievedFriendsQuery = `SELECT u.username, u.first_name, u.last_name, f.user_wins, f.friend_wins, f.ties FROM friends f 
     JOIN users u ON u.username = f.user_username WHERE f.friend_username = $1 AND f.status = 'accepted'`;
-    const sentFriendsQuery = `SELECT u.username, u.first_name, u.last_name FROM friends f 
+    const sentFriendsQuery = `SELECT u.username, u.first_name, u.last_name, f.user_wins, f.friend_wins, f.ties FROM friends f 
     JOIN users u ON u.username = f.friend_username WHERE f.user_username = $1 AND f.status = 'accepted'`;
 
     // Get friends who initially sent the friend request, then get friends who initially recieved the request, then combine
     const received = await db.any(recievedFriendsQuery, [username]);
+
+    // Switch order of wins
+    for(let i = 0; i < received.length; i++){
+        const temp = received[i].user_wins;
+        received[i].user_wins = received[i].friend_wins;
+        received[i].friend_wins = temp;
+    }
     const sent = await db.any(sentFriendsQuery, [username]);
     const friends = [...received, ...sent];
 

@@ -175,7 +175,7 @@ router.get('/profile/social/challenge/play', async (req, res) => {
     if(!challenge){
       return res.status(400).render('pages/social.hbs', socialObj);
     }
-
+    
     // Start challenge game by sending appropriate word
     if(challenge.user_username === userUsername){
       // If user already has a score don't let them play again
@@ -183,14 +183,27 @@ router.get('/profile/social/challenge/play', async (req, res) => {
         socialObj.message = "Challenge has already been played";
         return res.status(400).render('pages/social.hbs', socialObj);
       }
-      return res.status(200).render('pages/challengeGame.hbs', { word: challenge.friend_word, friendUsername: friendUsername});
+      const progress = {
+            guesses: challenge.user_progress,
+            row: challenge.user_progress.length,
+            start_time: challenge.user_start,
+            completed: (challenge.status === "wating_friend")
+        }
+      return res.status(200).render('pages/challengeGame.hbs', { word: challenge.friend_word, friendUsername: friendUsername, challengeProgress: progress});
     }else{
       // If user already has a score don't let them play again
       if(challenge.friend_score){
         socialObj.message = "Challenge has already been played";
         return res.status(400).render('pages/social.hbs', socialObj);
       }
-      return res.status(200).render('pages/challengeGame.hbs', { word: challenge.user_word, friendUsername: friendUsername});
+
+      const progress = {
+            guesses: challenge.friend_progress,
+            row: challenge.friend_progress.length,
+            start_time: challenge.friend_start,
+            completed: (challenge.status === "waiting_user")
+        }
+      return res.status(200).render('pages/challengeGame.hbs', { word: challenge.user_word, friendUsername: friendUsername, challengeProgress: progress});
     }
   } catch (err) {
     const friends = await getAllFriends(db, req.session.user.username);
@@ -264,14 +277,27 @@ router.post('/profile/social/challenge/result', async (req, res) => {
           if(!friend){
             res.status(500).json({ error: 'Friendship does not exist' });
           }
-          
+          await db.none(`
+              UPDATE users
+              SET challenge_plays = challenge_plays + 1,
+                  challenge_wins = challenge_wins + CASE WHEN $1 THEN 1 ELSE 0 END
+              WHERE username = $2
+          `, [userScore > friendScore, userUsername]);
+
+          await db.none(`
+              UPDATE users
+              SET challenge_plays = challenge_plays + 1,
+                  challenge_wins = challenge_wins + CASE WHEN $1 THEN 1 ELSE 0 END
+              WHERE username = $2
+          `, [friendScore > userScore, friendUsername]);
+
           // If order of friend and challenge names is switched switch score order
           if(friend.user_username != challenge.user_username){
             const temp = userScore;
             userScore = friendScore;
             friendScore = temp;
           }
-          console.log("ties",friend.user_username, friend.last_name);
+          console.log("User: " + userScore, "Friend: " + friendScore);
           // Update record between players
           if(userScore > friendScore){
             const updateRecordQuery = `UPDATE friends SET user_wins = $1 WHERE 
@@ -295,6 +321,33 @@ router.post('/profile/social/challenge/result', async (req, res) => {
         console.error(err);
         res.status(500).json({ error: 'Database update failed' });
     }
+});
+
+router.post('/profile/social/challenge/save', async (req, res) => {
+    console.log("saving");
+    const db = req.app.get('db');
+    const user = req.session.user;
+    const userUsername = req.session.user.username;
+    const friendUsername = req.body.friendUsername; 
+
+    const challenge = await getChallengeFromUsers(db, userUsername, friendUsername);
+    if (!challenge) return res.status(401).send();
+
+    const progressColumn = challenge.user_username === userUsername ? "user_progress" : "friend_progress";
+    const startColumn = challenge.user_username === userUsername ? "user_start" : "friend_start";
+
+    const { guess, row, completed, startTime } = req.body;
+    
+    const query = `
+        UPDATE challenge
+        SET ${progressColumn} = 
+            COALESCE(${progressColumn}, '[]'::jsonb) || to_jsonb($1::text), ${startColumn} = $2
+        WHERE id = $3
+    `;
+
+    await db.none(query, [guess, startTime, challenge.id]);
+
+    res.status(200).send();
 });
 
 module.exports = router;

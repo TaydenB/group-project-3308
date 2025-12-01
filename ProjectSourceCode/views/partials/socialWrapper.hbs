@@ -1,17 +1,74 @@
 <style>
+  /* Global Social Theme */
+
   body {
     background-color: #181818;
     color: white;
   }
+
+  /* List-group styling */
+  .list-group-item {
+    background-color: #242424 !important;
+    color: white !important;
+    border-color: #444 !important;
+    transition: border-color 0.2s ease;
+  }
+
+  /* GOLD border highlight on hover */
+  .list-group-item:hover {
+    background-color: #242424 !important;
+    border-color: #C6AA76 !important;   /* gold accent */
+    box-shadow: none !important;
+  }
+
+  /* Friend name styling */
+  .friend-name {
+    color: white !important;
+  }
+
+  /* Friend username link */
+  .friend-link {
+    color: #C6AA76 !important;
+    text-decoration: none;
+  }
+
+  .friend-link:hover {
+    color: white !important;
+    text-decoration: underline;
+  }
+
+  /* Universal gold button */
+  .gold-btn {
+    background-color: #C6AA76;
+    border: 1px solid white;
+    color: white;
+    padding: 6px 14px;
+    border-radius: 8px;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+  }
+
+  .gold-btn:hover {
+    background-color: grey !important;
+    border-color: transparent !important;
+    color: white !important;
+  }
+
+  .gold-btn:active {
+    background-color: #C6AA76 !important;
+    border-color: white !important;
+    color: white !important;
+  }
 </style>
+
 <div class="container py-4">
   <div class="row">
     {{> profileSidebar}}
+
     <div class="col-9">
-        {{> socialHeader}}
-        <div class="ps-1 pe-5">
-            {{> @partial-block }}
-        </div>
+      {{> socialHeader}}
+      <div class="ps-1 pe-5">
+        {{> @partial-block }}
+      </div>
     </div>
   </div>
 </div>

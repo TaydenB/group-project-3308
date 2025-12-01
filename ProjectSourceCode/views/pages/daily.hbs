@@ -4,10 +4,20 @@
 {{> gameHead}}
 
 <body>
-    {{> gameLayout}}
-    <!--Add JS implementation of game and sowpods-five-->
-    <script src="/resources/sowpods-five.js"></script>
-    <script type="module" src="/resources/game.js"></script>
+  {{> gameLayout}}
+
+  <!--scoreboard -->
+  {{> scoreboard entries=scoreboard}}
+
+  <!-- Expose any saved daily progress to the frontend -->
+  <script>
+    window.dailyProgress = {{{json dailyProgress }}} || null;
+  </script>
+
+
+  <!-- JS implementation of game and sowpods-five -->
+  <script src="/resources/sowpods-five.js"></script>
+  <script type="module" src="/resources/game.js"></script>
 </body>
 
 </html>

@@ -25,7 +25,7 @@ router.post('/scoreboard', async (req, res, next) => {
     try {
         const db = req.app.get('db');
 
-        // get username from session 
+        // Get username from session (adjust to your session shape)
         const username = req.session.user?.username;
         const { score } = req.body;
 
@@ -43,12 +43,10 @@ router.post('/scoreboard', async (req, res, next) => {
             [username, numericScore]
         );
 
-        
         res.status(200).json({ success: true });
-
     } catch (err) {
         next(err);
-    };
+    }
 });
 
 module.exports = router;

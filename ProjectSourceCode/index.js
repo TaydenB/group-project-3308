@@ -25,9 +25,17 @@ const hbs = handlebars.create({
   defaultLayout: 'main',
 });
 
+hbs.handlebars.registerHelper("json", function (context) {
+  return JSON.stringify(context);
+});
+
+hbs.handlebars.registerHelper("add1", function (value) {
+  return value + 1;
+});
+
 // database configuration
 const dbConfig = {
-  host: 'db', // the database server
+  host: process.env.POSTGRES_HOST, // the database server
   port: 5432, // the database port
   database: process.env.POSTGRES_DB, // the database name
   user: process.env.POSTGRES_USER, // the user account to connect with
@@ -91,6 +99,7 @@ app.use('/', require('./routes/challenge'));
 app.use('/', require('./routes/home'));
 app.use('/', require('./routes/social'));
 app.use('/', require('./routes/scoreboard'));
+
 
 // *****************************************************
 // <!-- Section 5 : Start Server-->

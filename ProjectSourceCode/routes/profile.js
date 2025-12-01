@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { getChallengeFromUsers, getAllFriends } = require('../public/resources/socialHelpers.js');
 
 // Authentication middleware
 const auth = (req, res, next) => {
@@ -141,35 +142,54 @@ router.post('/profile/account/edit', async (req, res) => {
 // -----------------------------
 // /profile/stats 
 // -----------------------------
-router.get('/profile/stats', (req, res) => {
+function getAverageStats(data){
+  const stats = {
+    avg_guesses: data.daily_plays > 0 ? (data.daily_total_guesses / data.daily_plays).toFixed(2) : 0,
+    avg_score: data.daily_plays > 0 ? (data.daily_total_score / data.daily_plays).toFixed(2) : 0,
+    avg_time: data.daily_plays > 0 ? (data.daily_total_time / data.daily_plays).toFixed(2) : 0
+  }
+  if(data.daily_plays > 0){
+    const avg = (data.daily_total_time / data.daily_plays).toFixed(2);
+    const minutes = Math.floor(avg / 60);
+    const seconds = avg % 60;
+    const paddedSeconds = seconds.toString().padStart(2, "0");
+    stats.avg_time = minutes + ":" + paddedSeconds;
+  }
+
+  return stats;
+  
+}
+router.get('/profile/stats', async (req, res) => {
+  const db = req.app.get('db');
   const user = req.session.user;
 
-  res.render('pages/profile.hbs', {
+  if (!user) return res.redirect('/login');
+
+  const query = `
+    SELECT daily_plays, daily_wins, daily_total_guesses, daily_total_score, daily_total_time,
+           challenge_plays, challenge_wins
+    FROM users
+    WHERE username = $1
+  `;
+  
+  const data = await db.one(query, [user.username]);
+
+  const averages = getAverageStats(data);
+
+  return res.render('pages/profile.hbs', {
     active: { stats: true },
     username: user.username,
     stats: {
-      plays: 0,
-      wins: 0,
-      avgGuesses: 0,
-      avgTime: '--',
-      challengePlays: 0,
-      challengeWins: 0,
-    },
+      plays: data.daily_plays,
+      wins: data.daily_wins,
+      avgGuesses: averages.avg_guesses,
+      avgScore: averages.avg_score,
+      avgTime: averages.avg_time,
+      challengePlays: data.challenge_plays,
+      challengeWins: data.challenge_wins
+    }
   });
 });
-
-async function getAllFriends(db, username) {
-    const recievedFriendsQuery = `SELECT u.username, u.first_name, u.last_name FROM friends f 
-    JOIN users u ON u.username = f.user_username WHERE f.friend_username = $1 AND f.status = 'accepted'`;
-    const sentFriendsQuery = `SELECT u.username, u.first_name, u.last_name FROM friends f 
-    JOIN users u ON u.username = f.friend_username WHERE f.user_username = $1 AND f.status = 'accepted'`;
-
-    // Get friends who initially sent the friend request, then get friends who initially recieved the request, then combine
-    const received = await db.any(recievedFriendsQuery, [username]);
-    const sent = await db.any(sentFriendsQuery, [username]);
-    const friends = [...received, ...sent];
-    return friends;
-}
 
 router.get('/profile/display/:username', async (req, res) => {
   const db = req.app.get('db');
@@ -177,6 +197,8 @@ router.get('/profile/display/:username', async (req, res) => {
   
   try {
     const user = await db.oneOrNone(`SELECT username, first_name, last_name, email FROM users WHERE username = $1`, [username]);
+
+    // get friends
     if(user){
       const full_name = 
       (user.first_name || user.last_name)
@@ -185,11 +207,32 @@ router.get('/profile/display/:username', async (req, res) => {
 
       const friends = await getAllFriends(db, username);
 
+        // Get stats
+        const statsQuery = `
+        SELECT daily_plays, daily_wins, daily_total_guesses, daily_total_score, daily_total_time,
+              challenge_plays, challenge_wins
+        FROM users
+        WHERE username = $1
+      `;
+
+      const data = await db.one(statsQuery, [username]);
+
+      const averages = getAverageStats(data);
+      
       return res.status(200).render('pages/otherProfile', {
         username: user.username,
         full_name: full_name,
         email: user.email,
-        friends: friends
+        friends: friends,
+        stats: {
+          plays: data.daily_plays,
+          wins: data.daily_wins,
+          avgGuesses: averages.avg_guesses,
+          avgScore: averages.avg_score,
+          avgTime: averages.avg_time,
+          challengePlays: data.challenge_plays,
+          challengeWins: data.challenge_wins
+        }
       });
     }
     return res.status(400).render('pages/noOtherProfile', { message: "User: '" + username + "' does not exist", error: true });
