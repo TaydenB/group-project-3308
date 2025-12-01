@@ -25,6 +25,8 @@ run();
 document.querySelectorAll(".keyboard-key").forEach(key => {
     //if you click on any of the keyboard buttons
     key.addEventListener("click", () => {
+        //returns if game is over
+        if (gameOver) return;
         //store the contents of the button in letter
         const letter = key.textContent.trim();
         //call addLetter function
@@ -34,12 +36,16 @@ document.querySelectorAll(".keyboard-key").forEach(key => {
 
 //for the delete key
 document.querySelector(".keyboard-key-delete").addEventListener("click", () => {
+    //returns if game is over
+    if (gameOver) return;
     //call deleteLetter function
     deleteLetter();
 });
 
 //for the enter key
 document.querySelector(".keyboard-key-enter").addEventListener("click", () => {
+    //returns if game is over
+    if (gameOver) return;
     //call submit word function
     submitWord();
 });
@@ -84,13 +90,13 @@ function deleteLetter() {
 function submitWord() {
     if (guesses >= 6) {
         showMessage("No more guesses!");
-        calculateScore();
+        const finalScore = 0;
+        endGame(finalScore);
         return;
     }
     //if not enough letters nothing happens
     if (tile != max_tiles) {
         showMessage("Not 5-letters!");
-        calculateScore();
         return
     }
     if (answer == null) {
@@ -112,14 +118,18 @@ function submitWord() {
     guesses += 1;
     colorRow(word, rows[selected_row]);
 
-    if (word == answer) {
+    if (word === answer) {
         showMessage("Correct!");
-        calculateScore();
+        const elapsedMs = getElapsedMs();
+        const finalScore = calculateScore(guesses, elapsedMs);
+        endGame(finalScore);
         return;
     }
-    if (guesses == 6) {
+
+    if (guesses === 6) {
         showMessage(`Word is ${answer}`);
-        calculateScore();
+        const finalScore = 0;   // or use calculateScore if you want
+        endGame(finalScore);
         return;
     }
 
@@ -163,7 +173,7 @@ function colorRow(word, row) {
 
 /*Time functions to calculate elapsed time  */
 function getElapsedMs() {
-    return Date.now() - startTime; 
+    return Date.now() - startTime;
 }
 
 function updateTimer() {
@@ -177,10 +187,9 @@ function updateTimer() {
 
     if (remaining <= 0) {
         remaining = 0;
-        gameOver = true;
-        score = 0; // timed out now score = 0
-        clearInterval(timerInterval);
-        showResult(false, "time");
+        const finalScore = 0;  //time out at 0
+        endGame(finalScore);
+        return;
     }
 
     const totalSeconds = Math.floor(remaining / 1000);
@@ -212,11 +221,24 @@ function sendScoreToServer(score) {
     // This posts the score to the server.
     fetch('/scoreboard', {
         method: 'POST',
-        headers: { 
+        headers: {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({ score })
     }).catch(err => {
         console.error('Failed to send score:', err);
     });
+}
+
+function endGame(finalScore) {
+    if (gameOver) return;
+    gameOver = true;
+
+    score = finalScore;
+
+    if (timerInterval) {
+        clearInterval(timerInterval);
+    }
+
+    sendScoreToServer(score);
 }

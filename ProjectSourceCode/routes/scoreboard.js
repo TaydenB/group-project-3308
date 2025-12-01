@@ -24,32 +24,31 @@ router.get('/scoreboard', async (req, res, next) => {
 router.post('/scoreboard', async (req, res, next) => {
     try {
         const db = req.app.get('db');
-        const username = req.session.user?.username; // adjust this based on how you store the logged-in user
+
+        // get username from session 
+        const username = req.session.user?.username;
         const { score } = req.body;
 
         if (!username) {
             return res.status(401).json({ error: 'Not logged in' });
         }
 
-        if (typeof score !== 'number') {
+        const numericScore = Number(score);
+        if (Number.isNaN(numericScore)) {
             return res.status(400).json({ error: 'Invalid score' });
         }
 
-        // keeps the best score of the userf
         await db.none(
-            `
-            INSERT INTO scoreboard (username, score)
-            VALUES ($1, $2)
-            ON CONFLICT (username) DO UPDATE
-            SET score = GREATEST(scoreboard.score, EXCLUDED.score)
-            `,
-            [username, score]
+            `INSERT INTO scoreboard (username, score) VALUES ($1, $2)`,
+            [username, numericScore]
         );
 
+        
         res.status(200).json({ success: true });
+
     } catch (err) {
         next(err);
-    }
+    };
 });
 
 module.exports = router;
