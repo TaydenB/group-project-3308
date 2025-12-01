@@ -7,7 +7,7 @@ createWordGame({
     restore(rows) {
         if (!window.challengeProgress) return null;
         const saved = window.challengeProgress;
-
+        console.log(saved);
         saved.guesses.forEach((prevWord, r) => {
             // Restore letters
             for (let c = 0; c < prevWord.length; c++)
@@ -17,20 +17,20 @@ createWordGame({
 
         return saved;
     },
-    async saveProgress(word, row, completed) {
+    async saveProgress(word, row, completed, startTime) {
         return fetch('/profile/social/challenge/save', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ guess: word, row, completed, friendUsername: document.getElementById('friend-username').dataset.friend})
+            body: JSON.stringify({ guess: word, row, completed, friendUsername: document.getElementById('friend-username').dataset.friend, startTime})
         });
     },
-    async finish(win) {
+    async finish(win, guesses, score) {
         await fetch('/profile/social/challenge/result', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 friendUsername: document.getElementById('friend-username').dataset.friend,
-                score: win ? 100 : 10
+                score: score
             })
         });
     }

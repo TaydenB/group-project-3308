@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS users (
     daily_wins INT DEFAULT 0,
     daily_total_guesses INT DEFAULT 0,
     daily_total_time INT DEFAULT 0,
+    daily_total_score INT DEFAULT 0,
 
     -- Challenge stats
     challenge_plays INT DEFAULT 0,
@@ -41,6 +42,8 @@ CREATE TABLE IF NOT EXISTS challenge(
     friend_username VARCHAR(20) REFERENCES users(username) ON DELETE CASCADE NOT NULL,
     user_score INT,
     friend_score INT,
+    user_start BIGINT,
+    friend_start BIGINT,
     user_progress JSONB DEFAULT '[]',
     friend_progress JSONB DEFAULT '[]',
     status VARCHAR(20) DEFAULT 'pending' 
@@ -54,7 +57,8 @@ CREATE TABLE IF NOT EXISTS daily_progress (
     answer VARCHAR(5) NOT NULL,
     guesses JSONB DEFAULT '[]',
     row INT DEFAULT 0,
-    completed BOOLEAN DEFAULT false
+    completed BOOLEAN DEFAULT false,
+    start_time BIGINT
 );
 
 CREATE TABLE IF NOT EXISTS daily_word_cache (

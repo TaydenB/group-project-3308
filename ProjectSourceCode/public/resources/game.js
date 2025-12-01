@@ -21,18 +21,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
             return saved;
         },
-        async saveProgress(word, row, completed) {
+        async saveProgress(word, row, completed, startTime) {
             return fetch('/daily/save', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ guess: word, row, completed })
+                body: JSON.stringify({ guess: word, row, completed, startTime })
             });
         },
-        async finish(win, guesses) {
+        async finish(win, guesses, score, elapsedTime) {
             return fetch('/daily/result', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ didWin: win, guesses })
+                body: JSON.stringify({ didWin: win, guesses, score, elapsedTime })
             });
         }
     });

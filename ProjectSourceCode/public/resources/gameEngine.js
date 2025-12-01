@@ -5,12 +5,16 @@ export function createWordGame(config) {
     let answer = null;
     let num_guesses = 0;
     const max_tiles = 5;
+    let startTime = Date.now();
+    let elapsedTime = 0;
+    let timerInterval = null;
     window.inputLocked = false;
 
     async function run() {
         answer = await config.getAnswer(); // Mode decides how to get answer
         if (config.restore) {
             const restored = await config.restore(rows);
+            console.log(restored);
             if (restored) {
                 let guesses = restored.guesses || guesses;
                 selected_row = guesses.length;
@@ -21,12 +25,49 @@ export function createWordGame(config) {
                     colorRow(guesses[i], rows[i]);
                 }
                 
+                startTime = restored.start_time || Date.now();
+                //elapsedTime = restored.elapsed || 0;
+                
+                
             }
         }
+        let word = "";
+        for (let i = 0; i < max_tiles; i++) word += rows[Math.max(selected_row-1, 0)].children[i].textContent;
+        word = word.toLowerCase();
+        console.log(word);
+        console.log(!(word === answer || num_guesses === 6));
+        if(!(word === answer || num_guesses === 6)){
+            startTimer();
+        }
+        
     }
 
     run();
 
+    // Timer functions:
+    function startTimer() {
+        if (timerInterval) clearInterval(timerInterval);
+
+        timerInterval = setInterval(() => {
+            elapsedTime = Math.floor((Date.now() - startTime) / 1000);
+            updateTimerUI(elapsedTime);
+        }, 1000);
+    }
+
+    function stopTimer() {
+        clearInterval(timerInterval);
+        timerInterval = null;
+    }
+
+    function updateTimerUI(sec) {
+        const timerDisplay = document.getElementById("timer");
+        if (!timerDisplay) return;
+
+        const minutes = Math.floor(sec / 60);
+        const seconds = sec % 60;
+
+        timerDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, "0")}`;
+    }
     // ----- KEYBOARD EVENTS -----
     document.querySelectorAll(".keyboard-key").forEach(key => {
         key.addEventListener("click", () => addLetter(key.textContent.trim()));
@@ -90,24 +131,47 @@ export function createWordGame(config) {
         colorRow(word, rows[selected_row]);
 
         // Mode chooses how to save
-        await config.saveProgress(word, selected_row, (word === answer || num_guesses === 6));
+        await config.saveProgress(word, selected_row, (word === answer || num_guesses === 6), startTime);
 
         if (word === answer) {
             showMessage("Correct!");
             window.inputLocked = true;
-            return config.finish(true, num_guesses);
+            stopTimer();
+            return config.finish(true, num_guesses, calculateScore(true), elapsedTime);
         }
-        console.log(num_guesses);
         if (num_guesses === 6) {
             showMessage(`Word is ${answer}`);
             window.inputLocked = true;
-            return config.finish(false, num_guesses);
+            stopTimer();
+            return config.finish(false, num_guesses, calculateScore(false), elapsedTime);
         }
 
         selected_row++;
         tile = 0;
     }
+    function calculateScore(correct){
+        let score = 2000;
+        const deductions = [0, 25, 75, 175, 375, 500];
+        const pointsPerMinute = 50;
+        const minWinScore = 50;
+        const loseScore = 10;
 
+        if(!correct){
+            return loseScore;
+        }
+
+        for(let i = 0; i < num_guesses; i++){
+            score -= deductions[i];
+        }
+
+        const minutes = Math.floor(elapsedTime / 60);
+
+        score -= pointsPerMinute * minutes;
+
+        console.log(score);
+
+        return Math.max(score, minWinScore);
+    }
     function colorRow(word, row) {
         const result = Array(5).fill('absent');
         const wordArr = word.split('');

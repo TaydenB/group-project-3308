@@ -87,20 +87,21 @@ router.post('/daily/save', async (req, res) => {
     const user = req.session.user;
     if (!user) return res.status(401).send();
 
-    const { guess, row, completed } = req.body;
+    const { guess, row, completed, startTime } = req.body;
     const answer = todaysWord();
 
     const query = `
-        INSERT INTO daily_progress (username, answer, guesses, row, completed)
-        VALUES ($1, $2, to_jsonb(ARRAY[$3]::text[]), $4, $5)
+        INSERT INTO daily_progress (username, answer, guesses, row, completed, start_time)
+        VALUES ($1, $2, to_jsonb(ARRAY[$3]::text[]), $4, $5, $6)
         ON CONFLICT (username)
         DO UPDATE SET
             guesses = daily_progress.guesses || to_jsonb($3::text),
             row = $4,
-            completed = $5
+            completed = $5,
+            start_time = $6
     `;
 
-    await db.none(query, [user.username, answer, guess, row, completed]);
+    await db.none(query, [user.username, answer, guess, row, completed, startTime]);
     res.status(200).send();
 });
 
@@ -110,18 +111,20 @@ router.post('/daily/result', async (req, res) => {
     const user = req.session.user;
     if (!user) return res.status(401).send();
 
-    const { guesses, didWin } = req.body;
+    const { guesses, didWin, score, elapsedTime } = req.body;
 
     const query = `
         UPDATE users
         SET 
             daily_plays = daily_plays + 1,
             daily_wins = daily_wins + CASE WHEN $1 THEN 1 ELSE 0 END,
-            daily_total_guesses = daily_total_guesses + $2
+            daily_total_guesses = daily_total_guesses + $2,
+            daily_total_score = daily_total_score + $4,
+            daily_total_time = daily_total_time + $5
         WHERE username = $3
     `;
 
-    await db.none(query, [didWin, guesses, user.username]);
+    await db.none(query, [didWin, guesses, user.username, score, elapsedTime]);
 
     res.json({ success: true });
 });
