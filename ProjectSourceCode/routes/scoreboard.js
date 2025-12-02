@@ -14,7 +14,7 @@ router.get('/scoreboard', async (req, res, next) => {
             LIMIT 100
             `
         );
-        res.render('scoreboard', { scoreboard: rows });
+        res.render('pages/scoreboardPage.hbs', { entries: rows });
 
     } catch (err) {
         next(err)

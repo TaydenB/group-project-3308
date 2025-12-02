@@ -33,5 +33,8 @@ createWordGame({
                 score: score
             })
         });
+    },
+    showScoreboard(){
+        return;
     }
 });

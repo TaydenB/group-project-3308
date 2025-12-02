@@ -42,6 +42,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ score })
             });
+            const modal = new bootstrap.Modal(document.getElementById('scoreboardModal'));
+            modal.show();
+        },
+        showScoreboard(){
+            const modal = new bootstrap.Modal(document.getElementById('scoreboardModal'));
+            modal.show();
         }
 
     });

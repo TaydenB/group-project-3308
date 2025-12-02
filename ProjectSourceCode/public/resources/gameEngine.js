@@ -20,12 +20,19 @@ export function createWordGame(config) {
                 selected_row = guesses.length;
                 num_guesses = guesses.length;
 
-                if (restored.completed) window.inputLocked = true;
+                if (restored.completed){
+                    window.inputLocked = true;
+                    config.showScoreboard();
+                }
+
                 for(let i = 0; i < guesses.length; i++){
                     colorRow(guesses[i], rows[i]);
                 }
                 
                 startTime = restored.start_time || Date.now();
+                if(!restored.completed){
+                    updateTimerUI(Math.floor((Date.now() - startTime) / 1000));
+                }
                 //elapsedTime = restored.elapsed || 0;
                 
                 
@@ -34,8 +41,6 @@ export function createWordGame(config) {
         let word = "";
         for (let i = 0; i < max_tiles; i++) word += rows[Math.max(selected_row-1, 0)].children[i].textContent;
         word = word.toLowerCase();
-        console.log(word);
-        console.log(!(word === answer || num_guesses === 6));
         if(!(word === answer || num_guesses === 6)){
             startTimer();
         }
@@ -116,7 +121,6 @@ export function createWordGame(config) {
     }
 
     async function submitWord() {
-        console.log(rows);
         if (window.inputLocked) return;
         if (num_guesses >= 6) return showMessage("No more guesses!");
         if (tile !== max_tiles) return showMessage("Not 5-letters!");
