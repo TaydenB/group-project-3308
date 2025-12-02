@@ -7,11 +7,11 @@ router.get("/", (req, res) => {
 })
 
 router.get("/login", (req, res) => {
-  res.render('pages/login');
+  res.render('pages/login', {active: {login: true}});
 })
 
 router.get("/register", (req, res) => {
-  res.render('pages/register');
+  res.render('pages/register', { active: {register: true}});
 })
 
 router.post("/register", async (req, res) => {
@@ -22,13 +22,13 @@ router.post("/register", async (req, res) => {
 
   try {
     await db.one(query, [username, hash]);
-    res.status(201).render('pages/login', { message: "Account created successfully!", error: false });
+    res.status(201).render('pages/login', { message: "Account created successfully!", error: false, active: {login: true} });
   }
   catch (err) {
     const error = true;
     console.log(err);
     const errorMessage = "Username already exists";
-    res.status(400).render('pages/register', { message: errorMessage, error });
+    res.status(400).render('pages/register', { message: errorMessage, error, active: {register: true} });
   }
 })
 
@@ -52,7 +52,7 @@ router.post("/login", async (req, res) => {
       res.redirect("/profile");
     } else {
       const errorMessage = "Incorrect password. Please try again.";
-      res.render("pages/login", { message: errorMessage, error: true });
+      res.render("pages/login", { message: errorMessage, error: true, active: {login: true} });
     }
 
   }
@@ -66,9 +66,9 @@ router.get('/logout', (req, res) => {
   req.session.destroy((err) => {
     if (err) {
       console.log('logout error')
-      return res.render('pages/logout', { message: 'Error logging out', error: true })
+      return res.render('pages/logout', { message: 'Error logging out', error: true, active: {logout: true} })
     }
-    res.render('pages/logout', { message: 'Logged Out Successfully!', error: false })
+    res.render('pages/logout', { message: 'Logged Out Successfully!', error: false, active: {logout: true} })
   });
 });
 

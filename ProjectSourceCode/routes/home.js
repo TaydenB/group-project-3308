@@ -40,6 +40,7 @@ router.get('/home', (req, res) => {
     if (!user) return res.redirect('/login');
 
     res.render("pages/home.hbs", {
+        active: {home: true},
         username: user.username
     });
 });

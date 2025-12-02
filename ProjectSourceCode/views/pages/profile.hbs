@@ -61,18 +61,6 @@
           <li>Wins: {{stats.challengeWins}}</li>
         </ul>
       {{/if}}
-
-      {{#if active.social}}
-        <h3>Friends</h3>
-        <ul class="list-group">
-          {{#each friends}}
-            <li class="list-group-item d-flex justify-content-between">
-              {{this.username}}
-              <button class="btn btn-primary btn-sm">Challenge</button>
-            </li>
-          {{/each}}
-        </ul>
-      {{/if}}
     </div>
   </div>
 </div>

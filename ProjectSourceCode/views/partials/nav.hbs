@@ -3,9 +3,18 @@
     header .navbar{
       background-color: #242424;
     }
-    header .navbar .nav-link{
-      color: grey;
+    header .navbar .nav-link {
+      color: #e5e5e5 !important;
     }
+
+    header .navbar .nav-link:hover {
+      color: #C6AA76 !important;
+    }
+
+    header .navbar .nav-link.active {
+      color: #C6AA76 !important;
+    }
+
   </style>
   <nav class="navbar navbar-expand-sm navbar-dark">
     <div class="container">
@@ -19,33 +28,39 @@
         <ul class="navbar-nav me-auto">
 
           <li class="nav-item">
-            <a class="nav-link" href="/home">Home</a>
+            <a class="nav-link {{#if active.home}}active{{/if}}" href="/home">Home</a>
           </li>
           {{#unless user}}
           <li class="nav-item">
-            <a class="nav-link" href="/login">Login</a>
+            <a class="nav-link {{#if active.login}}active{{/if}}" href="/login">Login</a>
           </li>
 
           <li class="nav-item">
-            <a class="nav-link" href="/register">Register</a>
+            <a class="nav-link {{#if active.register}}active{{/if}}" href="/register">Register</a>
           </li>
           {{/unless}}
           {{#if user}}
+          {{#if active.account}}
           <li class="nav-item">
-            <a class="nav-link" href="/profile">Profile</a>
+            <a class="nav-link active" href="/profile">Profile</a>
+          </li>
+          {{else}}
+          <li class="nav-item">
+            <a class="nav-link {{#if active.stats}}active{{/if}}" href="/profile">Profile</a>
+          </li>
+          {{/if}}
+          <li class="nav-item">
+            <a class="nav-link {{#if active.social}}active{{/if}}" href="/challenge">Challenge</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/challenge">Challenge</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/scoreboard">Scoreboard</a>
+            <a class="nav-link {{#if active.scoreboard}}active{{/if}}" href="/scoreboard">Scoreboard</a>
           </li>
           {{/if}}
 
         </ul>
         {{#if user}}
         <div class="nav-item me-1">
-          <a class="nav-link" href="/logout">Logout</a>
+          <a class="nav-link {{#if active.logout}}active{{/if}}" href="/logout">Logout</a>
         </div>
         {{/if}}
 
