@@ -70,11 +70,20 @@ router.get('/daily', async (req, res) => {
                 'DELETE FROM daily_progress WHERE username = $1',
                 [user.username]
             );
+            
         }
     } catch (err) {
         console.error("Error loading progress:", err);
     }
-
+    // delete old scoreboard rows
+    try {
+        await db.none(
+            `DELETE FROM scoreboard WHERE completed_word IS DISTINCT FROM $1;`,
+            [answer]
+        );
+    } catch (err) {
+        console.error("Error deleting entries in scoreboard:", err);
+    }
     // get scoreboard rows
     let scoreboard = [];
     try {
@@ -142,6 +151,9 @@ router.post('/daily/result', async (req, res) => {
     `;
 
     await db.none(query, [didWin, guesses, user.username, score, elapsedTime]);
+
+    const queryScoreUpdate = `UPDATE daily_progress SET last_score = $1 WHERE username = $2`
+    await db.none(queryScoreUpdate, [score, user.username]);
 
     res.json({ success: true });
 });

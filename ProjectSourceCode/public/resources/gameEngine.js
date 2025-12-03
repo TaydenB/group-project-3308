@@ -15,7 +15,6 @@ export function createWordGame(config) {
         answer = await config.getAnswer(); // Mode decides how to get answer
         if (config.restore) {
             const restored = await config.restore(rows);
-            console.log(restored);
             if (restored) {
                 let guesses = restored.guesses || guesses;
                 selected_row = guesses.length;
@@ -23,7 +22,7 @@ export function createWordGame(config) {
 
                 if (restored.completed){
                     window.inputLocked = true;
-                    config.showScoreboard();
+                    config.showScoreboard(restored.last_score);
                 }
 
                 for(let i = 0; i < guesses.length; i++){
@@ -151,13 +150,13 @@ export function createWordGame(config) {
             showMessage("Correct!");
             window.inputLocked = true;
             stopTimer();
-            return config.finish(true, num_guesses, calculateScore(true), elapsedTime);
+            return config.finish(true, num_guesses, calculateScore(true), elapsedTime, answer);
         }
         if (num_guesses === 6) {
             showMessage(`Word is ${answer}`);
             window.inputLocked = true;
             stopTimer();
-            return config.finish(false, num_guesses, calculateScore(false), elapsedTime);
+            return config.finish(false, num_guesses, calculateScore(false), elapsedTime, answer);
         }
 
         selected_row++;

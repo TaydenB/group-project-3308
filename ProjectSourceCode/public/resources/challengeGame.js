@@ -25,6 +25,9 @@ createWordGame({
         });
     },
     async finish(win, guesses, score) {
+        document.getElementById('finalScore').textContent = score;   
+        const modal = new bootstrap.Modal(document.getElementById('scoreModal'));
+        modal.show();
         await fetch('/profile/social/challenge/result', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -33,6 +36,8 @@ createWordGame({
                 score: score
             })
         });
+
+        
     },
     showScoreboard(){
         return;
