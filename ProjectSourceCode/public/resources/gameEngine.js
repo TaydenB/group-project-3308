@@ -9,6 +9,7 @@ export function createWordGame(config) {
     let elapsedTime = 0;
     let timerInterval = null;
     const max_time = 300;
+    let submitLock = false;
     window.inputLocked = false;
 
     async function run() {
@@ -130,6 +131,9 @@ export function createWordGame(config) {
     }
 
     async function submitWord() {
+        if (submitLock) return;
+        submitLock = true;
+        setTimeout(() => submitLock = false, 50);
         if (window.inputLocked) return;
         if (num_guesses >= 6) return showMessage("No more guesses!");
         if (tile !== max_tiles) return showMessage("Not 5-letters!");
@@ -137,6 +141,7 @@ export function createWordGame(config) {
         let word = "";
         for (let i = 0; i < max_tiles; i++) word += rows[selected_row].children[i].textContent;
         word = word.toLowerCase();
+        console.log("word", word);
 
         if (!sowpods.includes(word)) return showMessage("Not a word!");
 
