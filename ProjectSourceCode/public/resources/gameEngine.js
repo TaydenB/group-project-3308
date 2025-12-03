@@ -8,6 +8,7 @@ export function createWordGame(config) {
     let startTime = Date.now();
     let elapsedTime = 0;
     let timerInterval = null;
+    const max_time = 300;
     window.inputLocked = false;
 
     async function run() {
@@ -55,6 +56,15 @@ export function createWordGame(config) {
 
         timerInterval = setInterval(() => {
             elapsedTime = Math.floor((Date.now() - startTime) / 1000);
+            if(elapsedTime >= max_time){
+                elapsedTime = max_time;
+                updateTimerUI(elapsedTime);
+                showMessage(`Time is up! Word was ${answer}`);
+                window.inputLocked = true;
+                stopTimer();
+                config.finish(false, num_guesses, calculateScore(false), elapsedTime);
+                return;
+            }
             updateTimerUI(elapsedTime);
         }, 1000);
     }
@@ -154,9 +164,9 @@ export function createWordGame(config) {
         tile = 0;
     }
     function calculateScore(correct){
-        let score = 2000;
-        const deductions = [0, 25, 75, 175, 375, 500];
-        const pointsPerMinute = 50;
+        let score = 1000;
+        const deductions = [0, 25, 75, 175, 375, 490];
+        const pointsPerMinute = 100;
         const minWinScore = 50;
         const loseScore = 10;
 
