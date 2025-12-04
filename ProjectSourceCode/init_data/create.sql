@@ -21,7 +21,8 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS scoreboard (
     id SERIAL PRIMARY KEY,
     username VARCHAR(20) REFERENCES users(username) ON DELETE CASCADE,
-    score INT
+    score INT,
+    completed_word VARCHAR(5) -- Make sure last completed word matches current word so leaderboard is updated
 );
 
 CREATE TABLE IF NOT EXISTS friends(
@@ -58,7 +59,8 @@ CREATE TABLE IF NOT EXISTS daily_progress (
     guesses JSONB DEFAULT '[]',
     row INT DEFAULT 0,
     completed BOOLEAN DEFAULT false,
-    start_time BIGINT
+    start_time BIGINT,
+    last_score INT
 );
 
 CREATE TABLE IF NOT EXISTS daily_word_cache (

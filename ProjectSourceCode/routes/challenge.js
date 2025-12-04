@@ -277,19 +277,6 @@ router.post('/profile/social/challenge/result', async (req, res) => {
           if(!friend){
             res.status(500).json({ error: 'Friendship does not exist' });
           }
-          await db.none(`
-              UPDATE users
-              SET challenge_plays = challenge_plays + 1,
-                  challenge_wins = challenge_wins + CASE WHEN $1 THEN 1 ELSE 0 END
-              WHERE username = $2
-          `, [userScore > friendScore, userUsername]);
-
-          await db.none(`
-              UPDATE users
-              SET challenge_plays = challenge_plays + 1,
-                  challenge_wins = challenge_wins + CASE WHEN $1 THEN 1 ELSE 0 END
-              WHERE username = $2
-          `, [friendScore > userScore, friendUsername]);
 
           // If order of friend and challenge names is switched switch score order
           if(friend.user_username != challenge.user_username){
@@ -297,6 +284,21 @@ router.post('/profile/social/challenge/result', async (req, res) => {
             userScore = friendScore;
             friendScore = temp;
           }
+          await db.none(`
+              UPDATE users
+              SET challenge_plays = challenge_plays + 1,
+                  challenge_wins = challenge_wins + CASE WHEN $1 THEN 1 ELSE 0 END
+              WHERE username = $2
+          `, [userScore > friendScore, friend.user_username]);
+
+          await db.none(`
+              UPDATE users
+              SET challenge_plays = challenge_plays + 1,
+                  challenge_wins = challenge_wins + CASE WHEN $1 THEN 1 ELSE 0 END
+              WHERE username = $2
+          `, [friendScore > userScore, friend.friend_username]);
+          console.log("user", friend.user_username, challenge.user_username, userUsername);
+          console.log("friend", friend.friend_username, challenge.friend_username, friendUsername);
           console.log("User: " + userScore, "Friend: " + friendScore);
           // Update record between players
           if(userScore > friendScore){

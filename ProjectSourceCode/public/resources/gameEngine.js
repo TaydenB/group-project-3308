@@ -8,13 +8,14 @@ export function createWordGame(config) {
     let startTime = Date.now();
     let elapsedTime = 0;
     let timerInterval = null;
+    const max_time = 300;
+    let submitLock = false;
     window.inputLocked = false;
 
     async function run() {
         answer = await config.getAnswer(); // Mode decides how to get answer
         if (config.restore) {
             const restored = await config.restore(rows);
-            console.log(restored);
             if (restored) {
                 let guesses = restored.guesses || guesses;
                 selected_row = guesses.length;
@@ -22,7 +23,7 @@ export function createWordGame(config) {
 
                 if (restored.completed){
                     window.inputLocked = true;
-                    config.showScoreboard();
+                    config.showScoreboard(restored.last_score);
                 }
 
                 for(let i = 0; i < guesses.length; i++){
@@ -55,6 +56,15 @@ export function createWordGame(config) {
 
         timerInterval = setInterval(() => {
             elapsedTime = Math.floor((Date.now() - startTime) / 1000);
+            if(elapsedTime >= max_time){
+                elapsedTime = max_time;
+                updateTimerUI(elapsedTime);
+                showMessage(`Time is up! Word was ${answer}`);
+                window.inputLocked = true;
+                stopTimer();
+                config.finish(false, num_guesses, calculateScore(false), elapsedTime);
+                return;
+            }
             updateTimerUI(elapsedTime);
         }, 1000);
     }
@@ -121,6 +131,9 @@ export function createWordGame(config) {
     }
 
     async function submitWord() {
+        if (submitLock) return;
+        submitLock = true;
+        setTimeout(() => submitLock = false, 50);
         if (window.inputLocked) return;
         if (num_guesses >= 6) return showMessage("No more guesses!");
         if (tile !== max_tiles) return showMessage("Not 5-letters!");
@@ -128,6 +141,7 @@ export function createWordGame(config) {
         let word = "";
         for (let i = 0; i < max_tiles; i++) word += rows[selected_row].children[i].textContent;
         word = word.toLowerCase();
+        console.log("word", word);
 
         if (!sowpods.includes(word)) return showMessage("Not a word!");
 
@@ -141,22 +155,22 @@ export function createWordGame(config) {
             showMessage("Correct!");
             window.inputLocked = true;
             stopTimer();
-            return config.finish(true, num_guesses, calculateScore(true), elapsedTime);
+            return config.finish(true, num_guesses, calculateScore(true), elapsedTime, answer);
         }
         if (num_guesses === 6) {
             showMessage(`Word is ${answer}`);
             window.inputLocked = true;
             stopTimer();
-            return config.finish(false, num_guesses, calculateScore(false), elapsedTime);
+            return config.finish(false, num_guesses, calculateScore(false), elapsedTime, answer);
         }
 
         selected_row++;
         tile = 0;
     }
     function calculateScore(correct){
-        let score = 2000;
-        const deductions = [0, 25, 75, 175, 375, 500];
-        const pointsPerMinute = 50;
+        let score = 1000;
+        const deductions = [0, 25, 75, 175, 375, 490];
+        const pointsPerMinute = 100;
         const minWinScore = 50;
         const loseScore = 10;
 

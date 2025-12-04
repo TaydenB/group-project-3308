@@ -26,46 +26,18 @@
   }
 }
 </style>
-<div class="modal fade" id="scoreboardModal" tabindex="-1" aria-labelledby="scoreboardModalLabel" aria-hidden="true">
+<div class="modal fade" id="scoreModal" tabindex="-1" aria-labelledby="scoreModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-dialog-centered">
     <div class="modal-content custom-modal-dark">
 
       <div class="modal-header">
-        <h5 class="modal-title" id="scoreboardModalLabel">Score</h5>
+        <h5 class="modal-title" id="scoreModalLabel">Score</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
 
       <div class="modal-body">
         <div class="modal-body">
             <p>You scored: <span id="finalScore">0</span></p>
-        </div>
-        <button class="btn gold-btn mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#leaderboardCollapse" aria-expanded="false">
-            Show / Hide Leaderboard</button>
-        <div class="collapse" id="leaderboardCollapse">
-          <table class="table table-striped table-dark table-bordered text-center">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Username</th>
-                <th>Score</th>
-              </tr>
-            </thead>
-            <tbody>
-              {{#if entries.length}}
-                {{#each entries}}
-                  <tr>
-                    <td>{{add1 @index}}</td>
-                    <td>{{username}}</td>
-                    <td>{{score}}</td>
-                  </tr>
-                {{/each}}
-              {{else}}
-                <tr>
-                  <td colspan="3">No scores yet.</td>
-                </tr>
-              {{/if}}
-            </tbody>
-          </table>
         </div>
       </div>
 

@@ -1,0 +1,6 @@
+DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS scoreboard;
+DROP TABLE IF EXISTS friends;
+DROP TABLE IF EXISTS challenge;
+DROP TABLE IF EXISTS daily_progress;
+DROP TABLE IF EXISTS daily_word_cache;
